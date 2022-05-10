@@ -38,9 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+<<<<<<< HEAD
     'crispy_forms',
     'markdownx',
     'django.contrib.sites',
+=======
+>>>>>>> parent of a45a563 (구글 로그인 로그아웃)
     'blog',
     'main'
 ]
