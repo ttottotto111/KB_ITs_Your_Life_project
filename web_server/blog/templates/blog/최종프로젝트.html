@@ -41,7 +41,7 @@
     </style>
 
     <script>
-        function login_btn()
+        function down_price()
         {
 
         }
@@ -53,31 +53,35 @@
 
   </head>
   <body>
-    <!-- 테스트용 -->
-    <button onClick="location.href='http://127.0.0.1:8000/admin'">테스트용 계정 로그인</button>
-    <button onClick="location.href={% url 'login_screen' %}">로그인</button>
-    <button onClick="location.href='http://127.0.0.1:8000/blog/'">blog</button>
-
-
     <!-- 게시판 -->
     <table class="table">
         <thead class="thead-dark">
           <tr>
-            <th scope="col">제목</th>
-            <th scope="col">내용</th>
-            <th scope="col">업데이트날짜</th>
-            <th scope="col">게시 날짜</th>
+            <th scope="col">#</th>
+            <th scope="col">First</th>
+            <th scope="col">Last</th>
+            <th scope="col">Handle</th>
           </tr>
         </thead>
         <tbody>
-          {% for p in posts %}
           <tr>
-            <th>{{p.title}}</th>
-            <td>{{p.content}}</td>
-            <td>{{p.updated_at}}</td>
-            <td>{{p.created_at}}</td>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
           </tr>
-          {% endfor %}
+          <tr>
+            <th scope="row">2</th>
+            <td>Jacob</td>
+            <td>Thornton</td>
+            <td>@fat</td>
+          </tr>
+          <tr>
+            <th scope="row">3</th>
+            <td>Larry</td>
+            <td>the Bird</td>
+            <td>@twitter</td>
+          </tr>
         </tbody>
         </table>
 
