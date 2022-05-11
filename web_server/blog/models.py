@@ -19,14 +19,15 @@ class Category(models.Model):
     
     def __str__(self):
         return self.name
-    
- #   class Meta:
-  #      verbose_name_plural='Categories'
+    def get_absolute_url(self):
+        return f'/blog/category/{self.slug}/'
+    class Meta:
+         verbose_name_plural='Categories'
 
 class Post(models.Model):
     title = models.CharField(max_length=30)
     가격=models.CharField(max_length=100,blank=True)
-
+    content = models.TextField()
     head_image=models.ImageField(upload_to='blog/images/%Y/%m/%d/',blank=True)
     #file_upload=models.FileField(upload_to='blog/files/%Y/%m/%d/',blank=True)
     
@@ -40,8 +41,7 @@ class Post(models.Model):
     def __str__(self):
         return f'[{self.pk}]{self.title} :: {self.author}'
     
-    def get_absolute_url(self):
-        return f'/blog/category/{self.slug}/'
+
 
     def get_file_name(self):
         return os.path.basename(self.file_upload.name)
@@ -61,3 +61,10 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'{self.author}::{self.content}'
+    def get_absolute_url(self):
+        return f'{self.post.get_absolute_url()}#comment-{self.pk}'
+    def get_avatar_url(self):
+        if self.author.socialaccount_set.exists():
+            return self.author.socialaccount_set.first().get_avatar_url()
+        else:
+            return f'https://doitdjango.com/avatar/id/963/5e19b90b4ef21a68/svg/{self.author.email}'
