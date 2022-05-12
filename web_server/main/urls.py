@@ -2,7 +2,7 @@ from django.urls import path, include
 from . import views
 
 urlpatterns = [
-    path('', views.main),
-    path('login/', views.login_screen, name='login_screen'),
-    path('create_user/', views.userid_check, name='create_user'),
+    path('', views.main, name="main"),
+    path('accounts/', include('allauth.urls')),
+    path('<str:maker>', views.car_maker, name="car_maker"),
 ]
