@@ -10,13 +10,20 @@
     media="screen">
     <style>
     .card-img-top{
-      height:20em;
-      width:30em;
-      margin:0px auto;
+      border-bottom: 1px solid #eee; height: 200px;
     }
     .rounded-circle{
       height:3em;
       width:3em;
+    }
+    .row row-cols-2 row-cols-md-4 g-4{
+      display: flex;
+      justify-content: space-between;
+      margin: 0 70px;
+      margin-top: 65px;
+      flex-wrap: wrap;
+      {#float: left;#}
+
     }
   </style>
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
@@ -30,7 +37,7 @@
   crossorigin="anonymous"></script>
 </head>
 <body>
-  <div class="p-3 mb-2 bg-warning text-dark">
+  <div class="bg-warning p-2" style="--bs-bg-opacity: .5;">
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #fedf08;">
       <div class="container-fluid">
         <a class="navbar-brand" href="/">든든</a>
@@ -62,75 +69,82 @@
     </nav>
   
 
-    <h1>든든차
+    <h1>
       {% if search_info %}<small class="text-muted">{{ search_info }}</small>{% endif %}
       {% if category %}<span class="badge badge-secondary">{{ category }}</span>{% endif %}
       {% if tag %}<span class="badge badge-light"><i class="fas fa-tags"></i>{{ tag }}({{tag.post_set.count}})</span>{% endif %}
+      <div class="float-right">
+      <a href="/blog/category/판매/" class="btn btn-dark float-left">판매</a>
+      <a href="/blog/category/구매/" class="btn btn-dark float-left">구매</a>
+      <a href="/blog/category/자유/" class="btn btn-dark float-left">자유</a>
+      </div>
     </h1>
-
+    <br>
+    <br>
+    <div class="row row-cols-2 row-cols-md-4 g-4" id="post-{{p.pk}}">
     {% for p in post_list %}
-    <div class="card mb-4" id="post-{{p.pk}}">
-        {% if p.head_image %}
-        <img class="card-img-top" src="{{ p.head_image.url}}" alt="{{p}} head im-age">
-        {% else %}
-        <img class="card-img-top" src="https://image.yes24.com/momo/TopCate05/MidCate06/452138.jpg" alt="random_image">
-        {% endif %}
-        <div class="card=body">
-            <h2 class="card-title">
-            {% if p.category %}
-                <span class="badge bg-danger float-left">{{p.category}}</span>
+    <div class="col">
+        <div class="card">
+          <h3 class="card-title">
+            {% if p.category_id == 2 %}
+              <span class="badge bg-danger float-left">{{p.category}}</span>
+            {% elif p.category_id == 3 %}
+              <span class="badge bg-success float-left">{{p.category}}</span>
+            {% elif p.category_id == 4 %}
+              <span class="badge bg-warning float-left">{{p.category}}</span>
             {% else %}
-                <span class="badge bg-danger float-left">미분류</span>
+            <span class="badge bg-light text-dark float-left">미분류</span>
             {% endif %}
-                {{ p.title }}
-            </h2>
-            {% if p.가격 %}
-            <h5 class="text-muted">{{p.가격}}</h5>
+            {{ p.title | truncatechars_html:11 }}
+            </h3> 
+            <h5><div class="float-right">
+              {{ p.created_at }} 작성자
+              <a href="#">{{p.author|upper}}</a>
+            </div></h5>
+          {% if p.head_image %}
+          <img class="card-img-top" src="{{ p.head_image.url}}" alt="{{p}} head im-age">
+          {% else %}
+          <img class="card-img-top" src="https://image.yes24.com/momo/TopCate05/MidCate06/452138.jpg" alt="random_image">
+          {% endif %}
+      <div class="card-body">   
+        <a href="{{ p.get_absolute_url }}" class="btn btn-dark float-right">알아보러 가기 </a>
+        <div>  
+        {% if p.가격 %}
+            <h1 class="text-muted float-left">{{p.가격}}</h1>
             {% endif %}
-            <a href="{{ p.get_absolute_url }}" class="btn btn-primary float-right">알아보러 가기 </a>
-            <p class="card-text">{{ p.get_content_markdown | truncatechars_html:30 | safe }}</p>
-                {% if p.tags.exists %}
-                        <i class="fas fa-tags"></i>
-                        {% for tag in p.tags.iterator %}
-                            <a href="{{ tag.get_absolute_url }}"><span class="badge badge-pill badge-light">{{ tag }}</span></a>
-                        {% endfor %}
-                        <br/>
-                        <br/>
-                    {% endif %}
-                    <div class="card-footer text-muted">
-                      {{ p.created_at }} 작성자
-                      <a href="#">{{p.author|upper}}</a>
         </div>
+        </div>
+      </div>
     </div>
     {% endfor %}
-
+  </div>
+  <!-- 사용자 -->
     {% if user.is_authenticated%}
     {% if user.is_superuser or user.is_staff %}
+    <a class="btn btn-dark btn-sm float-right" href="/blog/create_post/" role="button"><i></i>&nbsp;&nbsp;게시판만들기</a>
+    {% endif %}
     {% endif %}
     {% if is_paginated %}
     <!-- Pagination -->
-    <a class="btn btn-warning btn-sm float-right" href="/blog/create_post/" role="button"><i class="fas fa-pen"></i>&nbsp;&nbsp;게시판만들기</a>
     <ul class="pagination justify-content-center mb-4">
-        {% if page_obj.has_next %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.next_page_number }}">&larr; 앞으로</a>
-            </li>
-        {% else %}
-            <li class="page-item disabled">
-                <a class="page-link" href="#">&larr; 앞으로</a>
-            </li>
-        {% endif %}
-
         {% if page_obj.has_previous %}
             <li class="page-item">
-                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">뒤로 &rarr;</a>
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&larr; 이전페이지 </a>
             </li>
         {% else %}
             <li class="page-item disabled">
-                <a class="page-link" href="#">뒤로 &rarr;</a>
+                <a class="page-link" href="#">&larr; 이전페이지</a>
             </li>
         {% endif %}
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">다음페이지 &rarr;</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <a class="page-link" href="#">다음페이지 &rarr;</a>
+            </li>
         {% endif %}
-{% endif %}
   </ul>
+  {% endif %}
 </div>

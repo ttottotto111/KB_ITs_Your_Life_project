@@ -10,20 +10,20 @@ from django.db.models import Q
 
 class PostList(ListView):
     model=Post
-    paginate_by=4
+    paginate_by=8
     #template_name = 'blog/index.html'
 class PostDetail(DetailView):
     model=Post
 
-#def index(request):
- #   posts=Post.objects.all()
- #   return render(
- #       request,
- #       'blog/index.html',
- #       {
-  #          'posts': posts,
-   #     }
-   # )
+    def index(request):
+        posts=Post.objects.all()
+        return render(
+            request,
+             'blog/index.html',
+         {
+               'posts': posts,
+        }
+   )
 
     def get_context_data(self,**kwargs):
         context=super(PostDetail,self).get_context_data()
@@ -55,7 +55,7 @@ def category_page(request,slug):
             'post_list': post_list,
             'categories':Category.objects.all(),
             'no_category_post_count':Post.objects.filter(category=None).count(),
-            'category':category,
+            
         }
     )
 
