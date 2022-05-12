@@ -6,7 +6,7 @@ from .models import *
 
 # Create your views here.
 def main(request):
-    posts = Post.objects.all().order_by('-pk')
+    posts = Post.objects().order_by('-pk')
     maker = ['현대', '기아']
     h = ['그랜저', '소나타', '투싼']
     g = ['k5', 'k7', 'ev6']
