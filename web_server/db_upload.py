@@ -6,9 +6,9 @@ import pandas as pd
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webserver_prj.settings')
 django.setup()
 
-from main.models import maker_test
+from main.models import car_list_test
 
-with open('test.csv', 'r', encoding='utf-8') as f:
+with open('sample.csv', 'r', encoding='utf-8') as f:
     dr = csv.DictReader(f)
     s = pd.DataFrame(dr)
     
@@ -17,4 +17,4 @@ for i in range(len(s)):
     info.append(s.iloc[i,:])
     
 for j in range(len(info)):
-    maker_test.objects.create(maker = info[j][0])
+    car_list_test.objects.create(maker = info[j][0], car_list=info[j][1])

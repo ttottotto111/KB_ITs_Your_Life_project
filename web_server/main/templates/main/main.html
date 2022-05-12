@@ -5,16 +5,32 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About me</title>
+    <title>든든카</title>
     <!-- j쿼리 -->
     <script src="http://code.jquery.com/jquery-latest.js"></script>
     <!-- 아이콘 사이트 -->
     <script src="https://kit.fontawesome.com/0b5ddba842.js" crossorigin="anonymous"></script>
     <!-- 부트스트랩 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <!-- css -->
+    <!-- 배경 -->
     <style>
-      select{
-        weight : 200px
+      body {
+        background: url('https://www.autospy.net/data/editor/2201/thumb-e019833800392a6e6b4636ab29eb19df_1641346698_5751_700x467.jpg') no-repeat
+        center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        background-size: cover;
+        -o-background-size: cover;
+      }
+    
+      section {
+        margin-bottom: 150px;
+      }
+
+      .card {
+        background-color: rgba(255,255,255,0.6)
       }
     </style>
   </head>
@@ -23,143 +39,136 @@
     {% load socialaccount %}
 
     <!-- 네이게이션 바-->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="http://127.0.0.1:8000">든든카</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link" href="http://127.0.0.1:8000/admin">테스트용 관리자 계정</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="http://127.0.0.1:8000/blog">게시판</a>
-              </li>
-            </ul>
-            <!-- 로그인 했을 시 -->
-            <ul class = "navbar-nav ms-auto">
-              {% if user.is_authenticated %}  
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    {{user.username}}
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                  <li><a class="dropdown-item" href="/accounts/logout/">log out</a></li>
-                  <li><a class="dropdown-item" href="#">마이페이지</a></li>
-                </ul>
-              </li>
-              <!-- 로그인 안했을 시-->
-              {% else %}
-              <li class="nav-item">
-                <!-- href = {% provider_login_url 'google' %} -->
-                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginmodal">Log in</a>
-              </li>
-              {% endif %}
-            </ul>        
-          </div>
-        </div>
-    </nav>
+    {% include 'main/navbar.html' %}
 
-    <!-- 로그인 모달 -->
-    <div class="modal fade" id="loginmodal" tabindex="-1" aria-labelledby="loginmodalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="loginmodalLabel"><i class="fa-solid fa-right-to-bracket"></i> 로그인</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <section>
+      <!-- 페이지 소개 -->
+      <div class="container">
+        <div class="row justify-content-between">
+
+          <div class="col-lg-6 text-light">
+            <h1 class="mt-5">든든카 간단 소개</h1>
+            <p>관심있는 중고차의 앞으로의 예상 감가가 어떤지, 적정 시세는 어떤지 알아보세요.</p>
           </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col-md-6">
-                <button type="button" class="btn btn-outline-dark" onclick="location.href='{% provider_login_url 'google' %}'"><i class="fa-brands fa-google"></i>  구글 로그인</button>
+
+          <!-- 블로그 카드 -->
+          <div class="col-lg-5 mt-5">
+            <h2 class="text-light"><a href="http://127.0.0.1:8000/blog/" class="text-decoration-none text-light">거래 게시판</a></h2>
+            {% for p in posts %}
+            <div class="card mt-1">
+              <div class="card-body">
+                <h5><a href="{{ p.get_absolute_url }}" class="text-decoration-none text-dark">{{p.title}}</a></h5>
+                  <span class="badge rounded-pill bg-light float-right text-dark">
+                    {{p.author.username}}
+                    &nbsp;
+                    &nbsp;
+                    {{p.created_at}}
+                  </span>
               </div>
             </div>
+            {% endfor %}
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
+
         </div>
       </div>
-    </div>
+    </section>  
 
-    <!-- 게시판 테이블 -->
-    <table class="table table-light  table-striped">
-        <thead class="thead-dark">
-          <tr>
-            <th scope="col">제목</th>
-            <th scope="col">내용</th>
-            <th scope="col">업데이트날짜</th>
-            <th scope="col">게시 날짜</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for p in posts %}
-          <tr>
-            <th>{{p.title}}</th>
-            <td>{{p.content}}</td>
-            <td>{{p.updated_at}}</td>
-            <td>{{p.created_at}}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-        </table>
-    
-      <!-- 메인화면 이미지 -->
-    <div>
-        <div>
-            <img src="https://www.autospy.net/data/editor/2201/thumb-e019833800392a6e6b4636ab29eb19df_1641346698_5751_700x467.jpg" class="img-fluid w-100">
-        </div>
-    </div>
-    
+    <!-- 사이트 밑 바 -->
+    <div class="fixed-bottom">
+
     <!-- 차량 선택 -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">차량 검색</a>
-        <!-- select -->
-        <form class="flex-fill">
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">       
 
-        <select id="maker" class="form-select form-select-sm" aria-label=".form-select-lg example">
-          <option selected>회사명</option>
-          {% for m in maker %}
-          <option value={{ m }}>{{m}}</option>
-          {% endfor %}
-        </select>
+          <!-- 회사명 선택 -->
+          <select id="maker" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+            <option selected>회사명</option>
+            {% for m in maker %}
+            <option value={{ m.maker }}>{{m.maker}}</option>
+            {% endfor %}
+          </select>
 
-        <select class="form-select form-select-sm" aria-label=".form-select-lg example">
-          <option selected id="car_list">차종</option>
-          <option value={{ forloop.counter }}>{{m}}</option>
-        </select>
+          <!-- 차종 선택 -->
+          <select id="car_list" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">         
+          </select>
 
-        <select class="form-select form-select-sm" aria-label=".form-select-lg example">
-          <option selected>세부차종</option>
-          {% for m in maker %}
-          <option value={{ forloop.counter }}>{{m}}</option>
-          {% endfor %}
-        </select>
+          <!-- 세부 차종 선택 -->
+          <select id="car_list_detail" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+          </select>
 
-        <button class="btn btn-outline-success" type="submit">검색</button>
-      </form>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown"></div>
-      </div>
-    </nav>
-    
-      <!-- 차종 선택 -->
+          <div class="collapse navbar-collapse" id="navbarNavDropdown"></div>
+        </div>
+        <a type="button" class="navbar-brand btn btn-outline-dark" href="#">차량 검색</a>
+      </nav>
+
+      <!-- footbar -->
+      {% include 'main/footbar.html'%}
+    </div>
+
+      <!-- 함수 -->
     <script>
+      // 차종 비활성화
+      function car_list_disabled(){
+        if($("#maker").val()== "회사명")
+        {
+          // 차종선택 비활성화
+          $("#car_list").empty()
+          $("#car_list").append("<option selected>회사명을 선택하세요</option>")
+          $("#car_list").prop('disabled', true)
+
+        }
+      }
+
+      // 세부차종 비활성화
+      function car_list_detail_disabled(){
+        if($("#car_list").val()== "회사명을 선택하세요")
+        {
+          $("#car_list_detail").empty()
+          $("#car_list_detail").append("<option selected>차종을 선택하세요</option>")
+          $("#car_list_detail").prop('disabled', true)
+        }
+      }
+
+      // 차종 선택
       $(document).ready(function(){
           $('#maker').on('change', function() {
-            maker = this.value
-            $.ajax({
-              url: "http://127.0.0.1:8000/"+maker,
-              success: function(data)
-              {
-                alert(data)
-              }
-            })
+            if(this.value== "회사명")
+            {       
+              car_list_disabled()
+            }
+            else
+            {
+              $("#car_list").prop('disabled', false)
+
+              // 회사명 추출
+              maker = this.value
+              
+              $.ajax({
+                type:'GET',
+                url: "http://127.0.0.1:8000/"+maker,
+                success: function(data)
+                {
+                  // 차종항목 초기화
+                  $("#car_list").empty()            
+                  $("#car_list").append("<option selected>차종을 선택하세요</option>")
+
+                  // 딕셔너리 형태의 차종을 모두 차종 항목에 삽입
+                  for(var i=0; i<Object.keys(data).length; i++)
+                  {
+                    $("#car_list").append("<option value=" + data[i] +">"+data[i]+"</option>")
+                  }
+                }
+              })
+            }
           });
-      });
+      });  
+
+      // 차량리스트, 세부차량 비활성화
+      $(function(){
+        car_list_disabled()
+        car_list_detail_disabled()
+      })
       </script>
-       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
   </body>
 </html>
