@@ -16,14 +16,11 @@
       height:3em;
       width:3em;
     }
-    .row row-cols-2 row-cols-md-4 g-4{
-      display: flex;
-      justify-content: space-between;
-      margin: 0 70px;
-      margin-top: 65px;
-      flex-wrap: wrap;
+    .col{
+      display: 
+      margin: 0px;
+      margin-top: 30px;
       {#float: left;#}
-
     }
   </style>
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
@@ -37,7 +34,7 @@
   crossorigin="anonymous"></script>
 </head>
 <body>
-  <div class="bg-warning p-2" style="--bs-bg-opacity: .5;">
+  <div class="p-3 mb-2 bg-body">
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #fedf08;">
       <div class="container-fluid">
         <a class="navbar-brand" href="/">든든</a>
@@ -73,6 +70,7 @@
       {% if search_info %}<small class="text-muted">{{ search_info }}</small>{% endif %}
       {% if category %}<span class="badge badge-secondary">{{ category }}</span>{% endif %}
       {% if tag %}<span class="badge badge-light"><i class="fas fa-tags"></i>{{ tag }}({{tag.post_set.count}})</span>{% endif %}
+      <br>
       <div class="float-right">
       <a href="/blog/category/판매/" class="btn btn-dark float-left">판매</a>
       <a href="/blog/category/구매/" class="btn btn-dark float-left">구매</a>
@@ -83,8 +81,9 @@
     <br>
     <div class="row row-cols-2 row-cols-md-4 g-4" id="post-{{p.pk}}">
     {% for p in post_list %}
-    <div class="col">
-        <div class="card">
+    
+    <div type="button" class="col" onclick="location.href='{{ p.get_absolute_url }}'">
+        <div class="card border border-warning">
           <h3 class="card-title">
             {% if p.category_id == 2 %}
               <span class="badge bg-danger float-left">{{p.category}}</span>
@@ -99,7 +98,7 @@
             </h3> 
             <h5><div class="float-right">
               {{ p.created_at }} 작성자
-              <a href="#">{{p.author|upper}}</a>
+              <a href="/blog/">{{p.author|upper}}</a>
             </div></h5>
           {% if p.head_image %}
           <img class="card-img-top" src="{{ p.head_image.url}}" alt="{{p}} head im-age">
@@ -107,7 +106,6 @@
           <img class="card-img-top" src="https://image.yes24.com/momo/TopCate05/MidCate06/452138.jpg" alt="random_image">
           {% endif %}
       <div class="card-body">   
-        <a href="{{ p.get_absolute_url }}" class="btn btn-dark float-right">알아보러 가기 </a>
         <div>  
         {% if p.가격 %}
             <h1 class="text-muted float-left">{{p.가격}}</h1>
