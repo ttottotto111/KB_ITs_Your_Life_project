@@ -14,17 +14,17 @@
                             {% else %}
                                <span class="badge bg-light text-dark float-left">미분류</span>
                             {% endif %}
-                               &nbsp;{{post.title}}
+                               {{post.title}}
                             {% if user.is_authenticated and user == post.author %}
-                            <a class="btn btn-info btn-sm float-right" href="/blog/update_post/{{ post.pk }}/" role="button"><i class="fas fa-pen"></i>  수정하기</a>
+                            <a class="btn btn-info btn-sm" style="float: right" href="/blog/update_post/{{ post.pk }}/" role="button"><i class="fas fa-pen"></i>  수정하기</a>
                         {% endif %}
                         </h1>
                         
                    
                         <h2 class="text-muted">
                             가격: {{post.가격}}
-                            <a href="#" class="float-right"> 판매자 {{post.author|upper}}</a> 
                         </h2>
+                        <a href="#" class="float-right"> 판매자 {{post.author|upper}}</a> 
                         
                         <p class="float-right">{{post.created_at}}</p>    
                         <br>
@@ -47,21 +47,22 @@
                            
                        
                 
-                <div id="comment-area">
+                <div id="comment-area" >
                     <!-- Comments Form -->
-                    <div class="card my-6">
+                    <div class="card my-6" >
                         <h5 class="card-header">댓글:</h5>
                      
                             {% if user.is_authenticated %}
                                 <form id="comment-form" method="POST" action="{{ post.get_absolute_url }}new_comment/">
                                     {% csrf_token %}
-                                    <div class="col-12">
+                                    <div class="col-12" >
+                                        
                                         {{ comment_form | crispy }}
                                     </div>
-                                    <button type="submit" class="btn btn-primary float-right">등록</button>
+                                    <button type="submit" class="btn btn-primary" style="float:right">든든!</button>
                                 </form>
                             {% else %}
-                              <a role="button" class="btn btn-outline-dark btn-block btn-sm" href="#" data-toggle="modal" data-target="#loginModal">Log in and leave a comment</a>
+                              <a role="button" class="btn btn-outline-dark btn-block btn-sm" href="#" data-toggle="modal" data-target="#loginModal">댓글을 남기시려면 로그인 해주세요</a>
                             {% endif %}
                      
                     </div>
@@ -74,21 +75,23 @@
                                 <img class="d-flex mr-3 rounded-circle" src="{{ comment.get_avatar_url }}" alt="{{ comment.author }}" width="20px">
                                 <div class="media-body">
                                     {% if user.is_authenticated and comment.author == user %}
-                                        <div class="float-right">
+   
+                                            <a role="button"
+                                            href="#"
+                                            id="comment-{{ comment.pk }}-delete-modal-btn"
+                                            class="btn btn-sm btn-danger"
+                                            data-bs-toggle="modal" data-bs-target="#deleteCommentModal-{{ comment.pk }}"
+                                            style="float:right">
+                                             delete
+                                            </a>
                                             <a role="button"
                                                class="btn btn-sm btn-info"
                                                id="comment-{{ comment.pk }}-update-btn"
-                                               href="/blog/update_comment/{{ comment.pk }}/">
+                                               href="/blog/update_comment/{{ comment.pk }}/"
+                                               style="float:right">
                                                 edit
                                             </a>
-                                            <a role="button"
-                                               href="#"
-                                               id="comment-{{ comment.pk }}-delete-modal-btn"
-                                               class="btn btn-sm btn-danger"
-                                               data-toggle="modal" data-target="#deleteCommentModal-{{ comment.pk }}">
-                                                delete
-                                            </a>
-                                        </div>
+                                    
                         
                                         <!-- Modal -->
                                         <div class="modal fade" id="deleteCommentModal-{{ comment.pk }}" tabindex="-1" role="dialog" aria-labelledby="deleteCommentModalLabel" aria-hidden="true">

@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     # 구글 로그인
     'allauth.socialaccount.providers.google',
-    
+    #댓글?
+    'widget_tweaks',
     'blog',
     'main',
     'mypage'
