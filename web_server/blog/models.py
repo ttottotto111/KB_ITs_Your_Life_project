@@ -51,6 +51,10 @@ class Post(models.Model):
 
     def get_absolute_url(self):
         return f'/blog/{self.pk}/'
+    
+    def get_user_url(self):
+        return f'/mypage/{self.author.id}'
+    
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -68,3 +72,6 @@ class Comment(models.Model):
             return self.author.socialaccount_set.first().get_avatar_url()
         else:
             return f'https://doitdjango.com/avatar/id/963/5e19b90b4ef21a68/svg/{self.author.email}'
+        
+    def get_mypage_url(self):
+        return f'/blog/{self.post_id}'
