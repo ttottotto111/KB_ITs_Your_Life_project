@@ -1,0 +1,70 @@
+<!-- 로그인 확인 -->
+{% load socialaccount %}
+
+<!-- 네이게이션 바-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="http://127.0.0.1:8000"><i class="fa-solid fa-car-on"></i>  든든카</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="http://127.0.0.1:8000/admin">테스트용 관리자 계정</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="http://127.0.0.1:8000/blog">게시판</a>
+          </li>
+        </ul>
+
+        <!-- 로그인 했을 시 -->
+        <ul class = "navbar-nav ms-auto">
+          {% if user.is_authenticated %}  
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{user.username}}
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <li><a class="dropdown-item" href="/accounts/logout/">log out</a></li>
+              <li><a class="dropdown-item" href="http://127.0.0.1:8000/mypage/{{ user.pk }}">마이페이지</a></li>
+            </ul>
+          </li>
+
+          <!-- 로그인 안했을 시-->
+          {% else %}
+          <li class="nav-item">
+            <!-- href = {% provider_login_url 'google' %} -->
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#loginmodal">Log in</a>
+          </li>
+          {% endif %}
+        </ul>        
+      </div>
+    </div>
+</nav>
+
+<!-- 로그인 모달 -->
+<div class="modal fade" id="loginmodal" tabindex="-1" aria-labelledby="loginmodalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="loginmodalLabel"><i class="fa-solid fa-right-to-bracket"></i> 로그인</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <button type="button" class="btn btn-outline-dark" onclick="location.href='{% provider_login_url 'google' %}'"><i class="fa-brands fa-google"></i>&nbsp&nbsp 구글 로그인</button>
+          </div>
+          <div class="col-md-6">
+            <a role="button" class="btn btn-outline-dark btn-block btn-sm" href="/accounts/login/"><i class="far fa-envelope"></i>&nbsp&nbsp Log in with E-mail</a>
+            <a role="button" class="btn btn-outline-dark btn-block btn-sm" href="/accounts/signup/"><i class="far fa-envelope"></i>&nbsp&nbsp Sign Up with E-mail</a>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

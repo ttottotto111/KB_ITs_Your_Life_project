@@ -1,93 +1,97 @@
 {% extends 'blog/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block head_title %}
-    {{ post.title }} - Blog
-{% endblock %}
-
-{% block main_area %}          
-                           <div id="post-area">
-                    
-
+{% block main_area %}      
+             <div id="post-area">
                             <!-- Post title-->
-                            <h1 class="fw-bolder mb-1">
-                            {% if post.category %}
+                        <h1 class="mt-4">
+                            {% if post.category_id == 2 %}
                                 <span class="badge bg-danger float-left">{{post.category}}</span>
+                            {% elif post.category_id == 3 %}
+                                <span class="badge bg-success float-left">{{post.category}}</span>
+                             {% elif post.category_id == 4 %}
+                                <span class="badge bg-warning float-left">{{post.category}}</span>
                             {% else %}
-                               <span class="badge bg-danger float-left">미분류</span>
+                               <span class="badge bg-light text-dark float-left">미분류</span>
                             {% endif %}
-                                  {{post.title}}</h1>
-               
-                            <!-- Post meta content-->
-                            <div class="text-muted fst-italic mb-2">{{post.created_at}}
-                                                    작성자
-                                    <a href="#">{{post.author|upper}}</a>
-                            </div>
+                               {{post.title}}
                             {% if user.is_authenticated and user == post.author %}
-                            <a class="btn btn-info btn-sm float-right" href="/blog/update_post/{{ post.pk }}/" role="button"><i class="fas fa-pen"></i>  수정하기</a>
-                             {% endif %}
-                            <!-- Post categories-->
-                            <h2 class="text-muted">
-                                 가격: {{post.가격}}</h2>
-                        </header>
+                            <a class="btn btn-info btn-sm" style="float: right" href="/blog/update_post/{{ post.pk }}/" role="button"><i class="fas fa-pen"></i>  수정하기</a>
+                        {% endif %}
+                        </h1>
+                        
+                   
+                        <h2 class="text-muted">
+                            가격: {{post.가격}}
+                        </h2>
+                        <a href="#" class="float-right"> 판매자 {{post.author|upper}}</a> 
+                        
+                        <p class="float-right">{{post.created_at}}</p>    
+                        <br>
+                        <br>
+                        
+                                        
                         <!-- Preview image figure-->
                         {% if post.head_image %}
-                        <figure class="mb-4"><img class="img-fluid rounded" src="{{ post.head_image.url}} " alt="{{post.title}} head_image" />
-                        {% else%}
-                        <figure class="mb-4"><img class="img-fluid rounded" src="https://image.yes24.com/momo/TopCate05/MidCate06/452138.jpg " alt="random" />
-                        {% endif %}
-                        </figure>
+                        <div style="text-align : center;">  <img class="img-fluid rounded" src="{{ post.head_image.url }}" alt="{{ post.title }} head_image"></div>
+                    {% else %}
+                    <div style="text-align : center;"> <img class="img-fluid rounded" src="https://picsum.photos/seed/{{ post.id }}/800/200" alt="random_image"></div>
+                    {% endif %}
+                        <br>
+                        <br>
+             
                         <!-- Post content-->
-                        <section class="mb-5">
-                            <p class="fs-5 mb-4">{{post.get_content_markdown | safe }}</p>
+                
+                            <h1>{{post.content}}</h1>
             
-                            <h2 class="fw-bolder mb-4 mt-5"></h2>
-                        </section>
-                    </article>
-                <div id="comment-area">
+                           
+                       
+                
+                <div id="comment-area" >
                     <!-- Comments Form -->
-                    <div class="card my-4">
-                        <h5 class="card-header">댓글</h5>
-                        <div class="card-body">
+                    <div class="card my-6" >
+                        <h5 class="card-header">댓글:</h5>
+                     
                             {% if user.is_authenticated %}
                                 <form id="comment-form" method="POST" action="{{ post.get_absolute_url }}new_comment/">
                                     {% csrf_token %}
-                                    <div class="form-group">
+                                    <div class="col-12" >
+                                        
                                         {{ comment_form | crispy }}
                                     </div>
-                                    <button type="submit" class="btn btn-primary">등록</button>
+                                    <button type="submit" class="btn btn-primary" style="float:right">든든!</button>
                                 </form>
                             {% else %}
-                                <a role="button" class="btn btn-outline-dark btn-block btn-sm" href="#" data-toggle="modal" data-target="#loginModal">Log in and leave a comment</a>
+                              <a role="button" class="btn btn-outline-dark btn-block btn-sm" href="#" data-toggle="modal" data-target="#loginModal">댓글을 남기시려면 로그인 해주세요</a>
                             {% endif %}
-                        </div>
+                     
                     </div>
                 
             
                     {% if post.comment_set.exists %}
                         {% for comment in post.comment_set.iterator %}
                             <!-- Single Comment -->
-                            <class="media mb-4" id="comment-{{ comment.pk }}">
-                                <img class="d-flex mr-3 rounded-circle" src="{{ comment.get_avatar_url }}" alt="{{ comment.author }}" width="60px">
+                            <div class="media mb-4" id="comment-{{ comment.pk }}" >
+                                <img class="d-flex mr-3 rounded-circle" src="{{ comment.get_avatar_url }}" alt="{{ comment.author }}" width="20px">
                                 <div class="media-body">
                                     {% if user.is_authenticated and comment.author == user %}
-                                        <div class="float-right">
+   
+                                            <a role="button"
+                                            href="#"
+                                            id="comment-{{ comment.pk }}-delete-modal-btn"
+                                            class="btn btn-sm btn-danger"
+                                            data-bs-toggle="modal" data-bs-target="#deleteCommentModal-{{ comment.pk }}"
+                                            style="float:right">
+                                             delete
+                                            </a>
                                             <a role="button"
                                                class="btn btn-sm btn-info"
                                                id="comment-{{ comment.pk }}-update-btn"
-                                               href="/blog/update_comment/{{ comment.pk }}/">
+                                               href="/blog/update_comment/{{ comment.pk }}/"
+                                               style="float:right">
                                                 edit
                                             </a>
-                                            <a role="button"
-                                               href="#"
-                                               id="comment-{{ comment.pk }}-delete-modal-btn"
-                                               class="btn btn-sm btn-danger"
-                                               data-toggle="modal" data-target="#deleteCommentModal-{{ comment.pk }}">
-                                                delete
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
+                                    
                         
                                         <!-- Modal -->
                                         <div class="modal fade" id="deleteCommentModal-{{ comment.pk }}" tabindex="-1" role="dialog" aria-labelledby="deleteCommentModalLabel" aria-hidden="true">
@@ -109,6 +113,7 @@
                                                 </div>
                                             </div>
                                         </div>
+
                                     {% endif %}
                                     <h5 class="mt-0">
                                         {{ comment.author.username }}
@@ -116,9 +121,11 @@
                                     </h5>
                                     <p>{{ comment.content | linebreaks }}</p>
                                     {% if comment.created_at != comment.modified_at %}
-                                        <p class="text-muted float-right"><small>Updated: {{ comment.modified_at }}</small></p>
-                                    {% endif %}
-                                    {% endfor %}
+                                        <p class="text-muted float-right"><small> Updated: {{ comment.modified_at }}</small></p>
                                     {% endif %}
                                 </div>
-                {% endblock %}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+ {% endblock %}

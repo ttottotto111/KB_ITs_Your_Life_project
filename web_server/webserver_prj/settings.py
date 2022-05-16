@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'crispy_forms',
 
     # allauth
@@ -48,9 +47,11 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     # 구글 로그인
     'allauth.socialaccount.providers.google',
-    
+    #댓글?
+    'widget_tweaks',
     'blog',
-    'main'
+    'main',
+    'mypage'
 ]
 
 MIDDLEWARE = [
