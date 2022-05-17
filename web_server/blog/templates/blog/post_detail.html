@@ -14,7 +14,7 @@
                             {% else %}
                                <span class="badge bg-light text-dark float-left">미분류</span>
                             {% endif %}
-                               {{post.title}}
+                               {{post.차종}}
                             {% if user.is_authenticated and user == post.author %}
                             <a class="btn btn-info btn-sm" style="float: right" href="/blog/update_post/{{ post.pk }}/" role="button"><i class="fas fa-pen"></i>  수정하기</a>
                         {% endif %}
@@ -32,17 +32,36 @@
                         
                                         
                         <!-- Preview image figure-->
-                        {% if post.head_image %}
-                        <div style="text-align : center;">  <img class="img-fluid rounded" src="{{ post.head_image.url }}" alt="{{ post.title }} head_image"></div>
-                    {% else %}
-                    <div style="text-align : center;"> <img class="img-fluid rounded" src="https://picsum.photos/seed/{{ post.id }}/800/200" alt="random_image"></div>
-                    {% endif %}
-                        <br>
-                        <br>
+                        {% if post.차사진 %}
+                        <div >  <img style="text-align : left; width: 50px; height: 200px;" class="img-fluid rounded" src="{{ post.차사진.url }}" alt="{{ post.차종 }} 차사진">
+                            <a style="font-size:1.0em float-right">연식:{{post.연식}}</a>
+                            <a style="font-size:1.0em float-right">주행거리:{{post.주행거리}}</a>
+                           
+                            <a style="font-size:1.0em float-right">연료:{{post.연료}}</a>
+                            <a style="font-size:1.0em float-right">구동방식:{{post.구동방식}}</a>
+                        
+                            <a style="font-size:1.3em float-right">연비:{{post.연비}}</a>
+                            <a style="font-size:1.3em float-right">배기량:{{post.배기량}}</a>
+                          
+                            <a style="font-size:1.3em float-right">색상:{{post.색상}}</a>
+                            <a style="font-size:1.3em float-right">사고유무:{{post.사고유무}}</a>
+                        
+                            <a style="font-size:1.3em float-right">압류및저당:{{post.압류및저당}}</a>
+                            <a style="font-size:1.3em float-right">전속이력:{{post.전속이력}}</a>
+                        </div>
+                        {% else %}
+                        <div style="text-align : left;"> <img class="img-fluid rounded" src="https://picsum.photos/seed/{{ post.id }}/800/200" alt="random_image"></div>
+                        {% endif %}
              
                         <!-- Post content-->
                 
-                            <h2>{{post.content|linebreaksbr}}</h2>
+                    
+                           
+                 
+                            <br>
+                            <br>
+                            <h2>{{post.내용}}</h2>
+
             
                            
                        

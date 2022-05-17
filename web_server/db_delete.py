@@ -4,6 +4,6 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webserver_prj.settings')
 django.setup()
 
-from main.models import maker_test
+from blog.models import Post
 
-maker_test.objects.all().delete()
+Post.objects.all().delete()

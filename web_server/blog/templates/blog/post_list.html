@@ -154,8 +154,8 @@
     <div type="button" class="col" onclick="location.href='{{ p.get_absolute_url }}'">
         <div class="card border border-warning">
           <h3 class="card-title">
-            {% if p.head_image %}
-            <img class="card-img-top" src="{{ p.head_image.url}}" alt="{{p}} head im-age">
+            {% if p.차사진 %}
+            <img class="card-img-top" src="{{ p.차사진.url}}" alt="차사진">
             {% else %}
             <img class="card-img-top" src="https://image.yes24.com/momo/TopCate05/MidCate06/452138.jpg" alt="random_image">
             {% endif %}
@@ -168,7 +168,7 @@
             {% else %}
             <span class="badge bg-light text-dark float-left">미분류</span>
             {% endif %}
-            <a style="font-size:0.7em">  {{ p.title | truncatechars_html:20 }}</a>
+            <a style="font-size:0.7em">  {{ p.차종 | truncatechars_html:20 }}</a>
             </h3> 
             <div class="card-body"> 
             <a><div class="float-right">
@@ -178,7 +178,7 @@
             <br>
             <br>
         {% if p.가격 %}
-            <h1 style="float:left; ">{{p.가격}}</h1>
+            <h1 style="float:left; color:blue;">{{p.가격}}</h1>
             {% endif %}
         </div>
       </div>
