@@ -10,7 +10,7 @@ from django.db.models import Q
 
 class PostList(ListView):
     model=Post
-    paginate_by=8
+    paginate_by=10
     #template_name = 'blog/index.html'
 class PostDetail(DetailView):
     model=Post
@@ -84,23 +84,9 @@ class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     
     def form_valid(self, form):
         current_user = self.request.user
-        if current_user.is_authenticated and (current_user.is_staff or current_user.is_superuser):
+        if current_user.is_authenticated or (current_user.is_staff or current_user.is_superuser):
             form.instance.author=current_user
-            response = super(PostCreate, self).form_valid(form)
-
-            tags_str = self.request.POST.get('tags_str')
-            if tags_str:
-                tags_str = tags_str.strip()
-                tags_str = tags_str.replace(',', ';')
-                tags_list = tags_str.split(';')
-
-                for t in tags_list:
-                    t = t.strip()
-                    tag, is_tag_created = Tag.objects.get_or_create(name=t)
-                    if is_tag_created:
-                        tag.slug = slugify(t, allow_unicode=True)
-                        tag.save()
-                    self.object.tags.add(tag)
+            response = super(PostCreate, self).form_valid(form) 
 
             return response
         else:
@@ -172,7 +158,6 @@ class PostSearch(PostList):
     def get_context_data(self, **kwargs):
         context = super(PostSearch, self).get_context_data()
         q = self.kwargs['q']
-        context['search_info'] = f'Search: {q} ({self.get_queryset().count()})'
 
         return context
     
