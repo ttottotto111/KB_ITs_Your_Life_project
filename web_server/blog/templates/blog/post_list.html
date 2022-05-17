@@ -134,52 +134,52 @@
       {% if category %}<span class="badge badge-secondary">{{ category }}</span>{% endif %}
       {% if tag %}<span class="badge badge-light"><i class="fas fa-tags"></i>{{ tag }}({{tag.post_set.count}})</span>{% endif %}
     </h1>
-      <a href="/blog/category/판매/" class="btn btn-outline-danger" style="display; block; width:100px; height:2em; font-size: 1.3em; float: left;" >판매</a>
-      <a href="/blog/category/구매/" class="btn btn-outline-primary" style="display; block; width:100px; height:2em;  font-size: 1.3em;  float: left;">구매</a>
-      <a href="/blog/category/자유/" class="btn btn-outline-warning" style="display; block; width:100px; height:2em;  font-size: 1.3em; float: left;; ">자유</a>
+      <a href="/blog/category/판매/" class="text-decoration-none badge bg-danger" style="display; block; width:150px; height:40px; font-size: 1.5em; float: left;" >판매</a>
+      <a href="/blog/category/구매/" class="text-decoration-none badge bg-success " style="display; block; width:150px; height:40px;  font-size: 1.5em;  float: left;">구매</a>
+      <a href="/blog/category/자유/" class="text-decoration-none badge bg-warning " style="display; block; width:150px; height:40px;  font-size: 1.5em; float: left;; ">자유</a>
       <div class="search"  style="float: right;">
           <div class="input-group">
               <input type="text" class="form-control" placeholder="차종입력" id="search-input">
               <span class="input-group-btn">
-                      <button class="btn btn-dark" type="button" onclick="searchPost();">든든!</button>
+                      <button class="btn btn-secondary" type="button" onclick="searchPost();">든든!</button>
                   </span>
           </div>
         </div>
       <br>
       <br>
       <br>
-    <div class="row row-cols-2 row-cols-md-5 g-4" id="post-{{p.pk}}">
+    <div class="row row-cols-2 row-cols-md-4 g-4" id="post-{{p.pk}}">
     {% for p in post_list %}
     
     <div type="button" class="col" onclick="location.href='{{ p.get_absolute_url }}'">
         <div class="card border border-warning">
           <h3 class="card-title">
-            {% if p.head_image %}
-            <img class="card-img-top" src="{{ p.head_image.url}}" alt="{{p}} head im-age">
-            {% else %}
-            <img class="card-img-top" src="https://image.yes24.com/momo/TopCate05/MidCate06/452138.jpg" alt="random_image">
-            {% endif %}
             {% if p.category_id == 2 %}
               <span class="badge bg-danger float-left">{{p.category}}</span>
             {% elif p.category_id == 3 %}
-              <span class="badge bg-primary float-left">{{p.category}}</span>
+              <span class="badge bg-success float-left">{{p.category}}</span>
             {% elif p.category_id == 4 %}
               <span class="badge bg-warning float-left">{{p.category}}</span>
             {% else %}
             <span class="badge bg-light text-dark float-left">미분류</span>
             {% endif %}
-            <a style="font-size:0.7em">  {{ p.title | truncatechars_html:20 }}</a>
+            {{ p.title | truncatechars_html:11 }}
             </h3> 
-            <div class="card-body"> 
-            <a><div class="float-right">
-              {{ p.created_at |date:'Y-m-d H:i' }} 
-            </div></a>
-            <a href="/blog/">작성자  {{p.author|upper}}</a>  
-            <br>
-            <br>
+            <h5><div class="float-right">
+              {{ p.created_at }} 작성자
+              <a href="/blog/">{{p.author|upper}}</a>
+            </div></h5>
+          {% if p.head_image %}
+          <img class="card-img-top" src="{{ p.head_image.url}}" alt="{{p}} head im-age">
+          {% else %}
+          <img class="card-img-top" src="https://image.yes24.com/momo/TopCate05/MidCate06/452138.jpg" alt="random_image">
+          {% endif %}
+      <div class="card-body">   
+        <div>  
         {% if p.가격 %}
-            <h1 style="float:left; ">{{p.가격}}</h1>
+            <h1 class="text-muted" style="float:right">{{p.가격}}</h1>
             {% endif %}
+        </div>
         </div>
       </div>
     </div>
@@ -188,7 +188,7 @@
   <br>
   <!-- 사용자 -->
     {% if user.is_authenticated%}
-    {% if user.is_authenticated or user.is_staff %}
+    {% if user.is_superuser or user.is_staff %}
     <div class="new">
     <a class="btn btn-dark btn-sm" style="display; block; width:110px; height:35px;" href="/blog/create_post/" role="button"><i></i>게시판만들기</a>
     </div>
