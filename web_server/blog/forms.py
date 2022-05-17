@@ -6,4 +6,5 @@ class CommentForm(forms.ModelForm):
         model=Comment
         exclude=('post','author','created_at','modified_at')
         widgets = {
-            'content': forms.TextInput(attrs={'class': 'form-control', 'placeholder':'든든하게 입력해주세요'})}
+            'content': forms.Textarea(attrs={'class': 'form-control','rows': 4, 'cols': 40, 'placeholder':'든든하게 입력해주세요'})
+            }
