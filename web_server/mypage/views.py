@@ -1,99 +1,30 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from blog.models import Post, Comment
 from django.contrib.auth.models import User
-from django.core.paginator import Paginator
-from .models import Mypage
+from django.core.paginator import Paginator  
 
 def mypage(request, pk):
     user_name = User.objects.get(pk = pk)
-    p_page = request.GET.get('p_page', '1')
-    c_page = request.GET.get('c_page', '1')
+    page = request.GET.get('page', '1')
         
     #게시글이 있는경우
     posts = Post.objects.filter(author_id = pk).order_by('-pk')
     comment = Comment.objects.filter(author_id = pk).order_by('-pk')
     
-    post_page = Paginator(posts, 7)
+    post_page = Paginator(posts, 5)
     comment_page = Paginator(comment,3)
     
-    post_obj = post_page.get_page(p_page)
-    comment_obj = comment_page.get_page(c_page)
-    
-    #이미지 및 자기소개
-    try:
-        if Mypage.objects.get(author_id=pk):
-            userinfo = Mypage.objects.get(author_id=pk)
-        else:
-            userinfo=None
-    except:
-        userinfo=None
-        
+    post_obj = post_page.get_page(page)
+    comment_obj = comment_page.get_page(page)
     context = {
         'name' :user_name,
         'posts': post_obj,
-        'comment':comment_obj,
-        'userinfo': userinfo
+        'comment':comment_obj
         }
-    return render(request,"mypage/mypage.html",context)
-
-# 자기소개 변경
-def user_content(request,pk):
-    if request.method == "POST":
-        # 사용자 데이터가 존재하는경우
-        if Mypage.objects.filter(author_id = pk):
-            usercontent = Mypage.objects.get(author_id=pk)
-            # 자기소개가 있는경우
-            if request.POST["user_content"]:
-                usercontent.content = request.POST["user_content"]
-                usercontent.save()
-                return mypage(request, pk)
-            
-            # 자개소개가 없는경우
-            else:
-                return mypage(request, pk)
-            
-        # 사용자 데이터가 없는경우
-        else:
-            user_id = User.objects.get(pk=pk)
-            usercontent = Mypage()
-            # 자기소개가 있는경우
-            if request.POST["user_content"]:
-                Mypage.objects.create(author=user_id, content=request.POST["user_content"])
-                return mypage(request, pk)
-            
-            # 자기소개가 없는경우 
-            else:
-                Mypage.objects.create(author=user_id, content=request.POST["user_content"])
-                return mypage(request, pk)
-
-# 이미지 변경
-def user_img(request, pk):
-    if request.method == "POST":
-        # 사용자 데이터가 존재하는경우
-        if Mypage.objects.filter(author_id = pk):
-            userimg = Mypage.objects.get(author_id=pk)
-            
-            # 사진이 있는경우
-            if request.FILES['user_img']:  
-                userimg.profile_img = request.FILES['user_img']
-                
-                userimg.save()
-                return mypage(request, pk)
-            
-            # 사진이 없는경우
-            else:
-                return mypage(request, pk)
-            
-        # 사용자 데이터가 없는경우
-        else:
-            user_id = User.objects.get(pk=pk)
-            userimg = Mypage()
-            # 사진이 있는경우
-            if request.FILES['user_img']:  
-                Mypage.objects.create(author=user_id, profile_img=request.FILES['user_img'])
-                return mypage(request, pk)
-            
-            # 사진이 없는경우
-            else:
-                Mypage.objects.create(author=user_id, profile_img=request.FILES['user_img'])
-                return mypage(request, pk)
+    return render(request,"mypage/mypage.html",context
+                # {
+                #     'name' :user_name,
+                #     'posts':posts,
+                #     'comment':comment
+                # }
+                )
