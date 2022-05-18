@@ -11,3 +11,5 @@ class Mypage(models.Model):
     content = models.TextField(max_length=100, null=True)
     #프로필 이미지
     profile_img = models.ImageField(upload_to='mypage/images/%Y/%m/%d/',blank=True)
+    #관심있는 차량
+    favorite_car = models.CharField(max_length=30, null=True)
