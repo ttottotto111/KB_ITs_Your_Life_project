@@ -62,7 +62,7 @@
             {% for p in posts %}
             <div class="card mt-1">
               <div class="card-body">
-                <h5><a href="{{ p.get_absolute_url }}" class="text-decoration-none text-dark">{{p.title}}</a></h5>
+                <h5><a href="{{ p.get_absolute_url }}" class="text-decoration-none text-dark">{{p.차종}}</a></h5>
                   <span class="badge rounded-pill bg-light float-right text-dark">
                     <a class="text-decoration-none text-dark" href="{{ p.get_user_url }}">{{p.author.username}}</a>
                     &nbsp;
