@@ -11,9 +11,4 @@ urlpatterns = [
     # 회사명으로 차종 검색
     path('<str:pk>', views.car_maker, name="car_maker"),
     
-    # 차종으로 세부차종 검색
-    path('car_detail/<str:car_name>', views.car_detail, name="car_detail"),
-    
-    # 그래프 데이터 전송
-    path('car_chart/<str:car_name>/<int:detail_no>', views.car_chart, name="car_chart"),
 ]

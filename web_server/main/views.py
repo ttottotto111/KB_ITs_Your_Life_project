@@ -1,5 +1,4 @@
 import enum
-from turtle import down
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.forms.models import model_to_dict
@@ -12,64 +11,29 @@ def main(request):
     posts = Post.objects.all().order_by('-pk')[:3]
     
     # 차량검색의 회사명 추출 (중복항목 제거)
-    company = car_list.objects.values('company').distinct().order_by('company')
+    maker = car_list_test.objects.values('maker').distinct().order_by('maker')
+     
     
     return render(request,"main/main.html",
                   {
                       'posts':posts,
-                      'maker':company,
+                      'maker':maker,
                   })
 
 def car_maker(request, pk):
+    print(pk)
     # 회사명으로 검색
-    make = car_list.objects.filter(company=pk)
-    name = make.values('name').distinct().order_by('name')
-        
-    # 딕셔너리에서 차종만 추출
-    dict_m = {}
-    for i,mm in enumerate(name):
-        dict_m[i]=mm['name']
-
-    # json형식으로 전송
-    return JsonResponse(dict_m)
-
-def car_detail(request, car_name):
-    # 차종으로 검색
-    make = car_list.objects.filter(name=car_name)
-    name = make.values('name_detail').distinct().order_by('name_detail')
-
-    # 딕셔너리에서 차종만 추출
-    dict_m = {}
-    for i,mm in enumerate(name):
-        dict_m[i]=mm['name_detail']
-
-    # json형식으로 전송
-    return JsonResponse(dict_m)
-
-# 감가 그래프 정보 전송
-def car_chart(request, car_name, detail_no):
-    # 차종, 감가율, 매년가격, 년도
-    # 차종으로 검색
-    car = car_list.objects.filter(name=car_name)
-    car_info = car.values('name_detail', 'down_rate', 'rate_2023', 'rate_2024', 'rate_2025', 'rate_2026', 'rate_2027').distinct().order_by('name_detail')[detail_no]
-
-    print("car info : ", car_info)
+    make = car_list_test.objects.filter(maker=pk)
     
-    #차종
-    name = car_info['name_detail']
-    #감가율
-    down_rate = car_info['down_rate']
-    #매년 가격
-    price = []
-    for i in range(3, 8):
-        price.append(car_info['rate_202'+str(i)])
-        
+    # 검색한 내용을 딕셔너리로 반환
+    maker_dict =[]
+    for m in make:
+        maker_dict.append(model_to_dict(m))
+    
     # 딕셔너리에서 차종만 추출
-    chart = {
-        'name': name,
-        'down_rate': down_rate,
-        'price':price
-    }
-
+    dict_m = {}
+    for i,mm in enumerate(maker_dict):
+        dict_m[i]=mm['car_list']
+    
     # json형식으로 전송
-    return JsonResponse(chart)
+    return JsonResponse(dict_m)
