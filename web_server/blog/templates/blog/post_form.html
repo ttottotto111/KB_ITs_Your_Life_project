@@ -3,11 +3,120 @@
 {% block head_title %}든든{% endblock %}
 
 {% block main_area %}
+<!-- j쿼리 -->
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+
     <h1>든든</h1>
     <hr/>
     <form method="post" enctype="multipart/form-data">{% csrf_token %}
         {{ form | crispy }}
         <button type="submit" class="btn btn-primary float-right">든든!</button>
+        <button id="price" class="btn btn-primary float-right">가격 알아보기!</button>
     </form>
+
+    <script>
+            $(document).ready(function(){
+                $('#id_생산지').on('change', function() {
+                    // 회사명 추출
+                    maker = this.value
+                    
+                    $.ajax({
+                      type:'GET',
+                      url: "http://127.0.0.1:8000/blog/create_post/made/"+maker,
+                      success: function(data)
+                      {
+                        // 차종항목 초기화
+                        $("#id_브랜드").empty()            
+                        $("#id_브랜드").append("<option selected>차종을 선택하세요</option>")
+      
+                        // 딕셔너리 형태의 차종을 모두 차종 항목에 삽입
+                        for(var i=0; i<Object.keys(data).length; i++)
+                        {
+                          $("#id_브랜드").append("<option value=" + data[i] +">"+data[i]+"</option>")
+                        }
+                      }
+                    })
+                  
+                });
+            }); 
+            
+            $(document).ready(function(){
+                $('#id_브랜드').on('change', function() {
+                    // 회사명 추출
+                    name = this.value
+                    
+                    $.ajax({
+                      type:'GET',
+                      url: "http://127.0.0.1:8000/blog/create_post/brand/"+name,
+                      success: function(data)
+                      {
+                        // 차종항목 초기화
+                        $("#id_차종").empty()            
+                        $("#id_차종").append("<option selected>차종을 선택하세요</option>")
+      
+                        // 딕셔너리 형태의 차종을 모두 차종 항목에 삽입
+                        for(var i=0; i<Object.keys(data).length; i++)
+                        {
+                          $("#id_차종").append("<option value=" + data[i] +">"+data[i]+"</option>")
+                        }
+                      }
+                    })
+                  
+                });
+            }); 
+
+            $(document).ready(function(){
+                $('#id_차종').on('change', function() {
+                    // 회사명 추출
+                    papa = this.value
+                    
+                    $.ajax({
+                      type:'GET',
+                      url: "http://127.0.0.1:8000/blog/create_post/detail/"+papa,
+                      success: function(data)
+                      {
+                        // 차종항목 초기화
+                        $("#id_세부차종").empty()            
+                        $("#id_세부차종").append("<option selected>차종을 선택하세요</option>")
+      
+                        // 딕셔너리 형태의 차종을 모두 차종 항목에 삽입
+                        for(var i=0; i<Object.keys(data).length; i++)
+                        {
+                          $("#id_세부차종").append("<option value=" + "\"" +data[i] +"\"" +">"+data[i]+"</option>")
+                        }
+                      }
+                    })
+                  
+                });
+            }); 
+
+            $(document).ready(function(){
+                $('#id_세부차종').on('change', function() {
+                    // 회사명 추출
+                    car_n = $("#id_차종").val()
+                    papa = $("#id_세부차종").val()
+                    
+                    $.ajax({
+                      type:'GET',
+                      url: "http://127.0.0.1:8000/blog/create_post/detail_val/"+car_n+"/"+papa,
+                      success: function(data)
+                      {           
+                        $("#id_세차").val(data[0])
+                      }
+                    })
+                  
+                });
+            }); 
+    
+            $("#price").click(function(){
+                //모든 항목 변수
+
+                // url에 변수값 실어서 전송
+                //success시 data => 예상가격
+                $.ajax({
+                    type:'GET',
+                })
+            })
+        </script>
     {{ form.media }}
 {% endblock %}

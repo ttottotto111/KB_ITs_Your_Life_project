@@ -14,7 +14,7 @@
                             {% else %}
                                <span class="badge bg-light text-dark float-left">미분류</span>
                             {% endif %}
-                               {{post.차종}}
+                               {{post.브랜드}}&nbsp{{post.세부차종}}
                             {% if user.is_authenticated and user == post.author %}
                             <a class="btn btn-info btn-sm" style="float: right" href="/blog/update_post/{{ post.pk }}/" role="button"><i class="fas fa-pen"></i>  수정하기</a>
                         {% endif %}
@@ -22,36 +22,33 @@
                         
                         <br>
                         <h2>
-                            판매가격: <a style='color:blue;'>{{post.가격}}</a>
+                            판매가격: <a style='color:blue;'>{{post.가격}}만원</a>
                         </h2>
-                        <a href="#" class="float-right"> 판매자 {{post.author|upper}}</a> 
+            
                         
-                        <p class="float-right">{{post.created_at|date:'Y-m-d H:i'}}</p>    
-                        <br>
-                        <br>
-                        
-                                        
+                        <div class="card mb-3">
+                            <img style=" width: 965px; height: 500px;" class="card-img-top" src="{{ post.차사진.url }}" alt="{{ post.차종 }} 차사진">
+                            <div class="card-body">
+                              <h1 class="card-title">기본정보</h1>
+                              <a style="font-size:4.0em; float-right">연식:{{post.연식}}</ㅁ>
+                              <a style="font-size:4.0em; float-right">주행거리:{{post.주행거리}}</a>
+                                <br>
+                              <a style="font-size:4.0em; float-right">연료:{{post.연료}}</a>
+                              <a style="font-size:4.0em; float-right">구동방식:{{post.구동방식}}</a>
+                              <br>
+                              <a style="font-size:4.0em; float-right">배기량:{{post.배기량}}</a>
+                            
+                              <a style="font-size:4.0em; float-right">색상:{{post.색상}}</a>
+                                <br>
+                              <a style="font-size:4.0em; float-right">압류및저당:{{post.압류및저당}}</a>
+                              <a style="font-size:4.0em ;float-right">사고유무:{{post.사고유무}}</a>
+                              <a style="font-size:4.0em; float-right">전속이력:{{post.전속이력}}</a>
+                            </div>
+                          </div>                
                         <!-- Preview image figure-->
-                        {% if post.차사진 %}
-                        <div >  <img style="text-align : left; width: 50px; height: 200px;" class="img-fluid rounded" src="{{ post.차사진.url }}" alt="{{ post.차종 }} 차사진">
-                            <a style="font-size:1.0em float-right">연식:{{post.연식}}</a>
-                            <a style="font-size:1.0em float-right">주행거리:{{post.주행거리}}</a>
-                           
-                            <a style="font-size:1.0em float-right">연료:{{post.연료}}</a>
-                            <a style="font-size:1.0em float-right">구동방식:{{post.구동방식}}</a>
-                        
-                            <a style="font-size:1.3em float-right">연비:{{post.연비}}</a>
-                            <a style="font-size:1.3em float-right">배기량:{{post.배기량}}</a>
-                          
-                            <a style="font-size:1.3em float-right">색상:{{post.색상}}</a>
-                            <a style="font-size:1.3em float-right">사고유무:{{post.사고유무}}</a>
-                        
-                            <a style="font-size:1.3em float-right">압류및저당:{{post.압류및저당}}</a>
-                            <a style="font-size:1.3em float-right">전속이력:{{post.전속이력}}</a>
-                        </div>
-                        {% else %}
-                        <div style="text-align : left;"> <img class="img-fluid rounded" src="https://picsum.photos/seed/{{ post.id }}/800/200" alt="random_image"></div>
-                        {% endif %}
+                     
+                   
+               
              
                         <!-- Post content-->
                 
@@ -60,8 +57,14 @@
                  
                             <br>
                             <br>
-                            <h2>{{post.내용}}</h2>
-
+                            <h2>{{post.내용}}
+  
+                                
+                            </h2>
+                            
+                            <a href="#" style="float-right"> 판매자 {{post.author|upper}}</a> 
+                            <a style="float-right">{{post.created_at|date:'Y-m-d H:i'}}</a>    
+                            
             
                            
                        
