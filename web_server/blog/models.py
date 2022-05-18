@@ -64,7 +64,7 @@ class Post(models.Model):
     압류및저당 = models.CharField(max_length=30,blank=True,choices=있없)
     전속이력 = models.CharField(max_length=30,blank=True,choices=있없)
     차사진 =models.ImageField(upload_to='blog/images/%Y/%m/%d/',blank=True)
-    #file_upload=models.FileField(upload_to='blog/files/%Y/%m/%d/',blank=True)
+    file_upload=models.FileField(upload_to='blog/files/%Y/%m/%d/',blank=True)
     내용 = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
