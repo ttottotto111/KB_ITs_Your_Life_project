@@ -50,7 +50,7 @@ class Post(models.Model):
         ( '스마트','스마트'), ('벤틀리','벤틀리'),
         ( '애스턴마틴','애스턴마틴'),( '롤스로이스','롤스로이스'), ('선롱','선롱'), ('람보르기니','람보르기니'),('험머', '험머'))
     
-    브랜드=   models.CharField(max_length=30,blank=True,null=True,choices=종류)
+    브랜드= models.CharField(max_length=30,blank=True,null=True,choices=종류)
     차종 = models.CharField(max_length=50,blank=True,null=True)
     가격=models.CharField(max_length=100,blank=True)
     연식 = models.CharField(max_length=30,blank=True)
@@ -64,7 +64,7 @@ class Post(models.Model):
     압류및저당 = models.CharField(max_length=30,blank=True,choices=있없)
     전속이력 = models.CharField(max_length=30,blank=True,choices=있없)
     차사진 =models.ImageField(upload_to='blog/images/%Y/%m/%d/',blank=True)
-    #file_upload=models.FileField(upload_to='blog/files/%Y/%m/%d/',blank=True)
+    file_upload=models.FileField(upload_to='blog/files/%Y/%m/%d/',blank=True)
     내용 = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
