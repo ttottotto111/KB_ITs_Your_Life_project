@@ -4,6 +4,6 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'webserver_prj.settings')
 django.setup()
 
-from blog.models import Post
+from main.models import car_list
 
-Post.objects.all().delete()
+car_list.objects.all().delete()
