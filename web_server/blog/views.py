@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.views.generic import ListView,DetailView,CreateView,UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import Post,Category,Tag,Comment
+from .models import Post,Category,Tag,Comment, car
 from django.core.exceptions import PermissionDenied
 from django.utils.text import slugify
 from .forms import CommentForm
@@ -10,6 +10,10 @@ from django.db.models import Q
 from django import forms
 from django.http import JsonResponse
 from main.models import car_list
+import xgboost as xgb
+import pickle
+import numpy as np
+import pandas as pd
 
 class PostList(ListView):
     model=Post
@@ -62,6 +66,12 @@ def category_page(request,slug):
         }
     )
 
+def remove_post(request, pk):
+    posts = Post.objects.get(pk=pk)
+    if request.method == 'POST':
+        posts.delete()
+        return redirect('/blog/')
+    return render(request, 'blog/delete.html', {'posts': posts})
     
 def tag_page(request, slug):
     tag = Tag.objects.get(slug=slug)
@@ -87,7 +97,7 @@ class PostCreate(LoginRequiredMixin, UserPassesTestMixin, CreateView,forms.Model
     
     def get_form(self, form_class=None):
         form = super(PostCreate, self).get_form(form_class)
-        form.fields['가격'].widget = forms.TextInput(attrs={'placeholder': 'ex) 1470 만원을 제외하고 입력하여 주세요'})
+        form.fields['가격'].widget = forms.TextInput(attrs={'placeholder': 'ex) 가격 알아보기를 클릭 후 적정가격을 알아본 후 입력해 주세요 만원을 제외하고 입력하여 주세요 '})
         form.fields['연식'].widget = forms.TextInput(attrs={'placeholder': 'ex)2017 년도만 입력하여 주세요'})
         form.fields['주행거리'].widget = forms.TextInput(attrs={'placeholder': 'ex) 1346 km를 제외하고 입력하여 주세요'})
         form.fields['배기량'].widget = forms.TextInput(attrs={'placeholder': 'ex) 346 cc를 제외하고 입력하여 주세요'})
@@ -120,7 +130,7 @@ class PostUpdate(LoginRequiredMixin,UpdateView):
     
     def get_form(self, form_class=None):
         form = super(PostUpdate, self).get_form(form_class)
-        form.fields['가격'].widget = forms.TextInput(attrs={'placeholder': 'ex) 1470 만원을 제외하고 입력하여 주세요'})
+        form.fields['가격'].widget = forms.TextInput(attrs={'placeholder': 'ex) 가격 알아보기를 클릭 후 적정가격을 알아본 후 입력해 주세요 만원을 제외하고 입력하여 주세요'})
         form.fields['연식'].widget = forms.TextInput(attrs={'placeholder': 'ex) 2017 년도만 입력하여 주세요'})
         form.fields['주행거리'].widget = forms.TextInput(attrs={'placeholder': 'ex) 1346 km를 제외하고 입력하여 주세요'})
         form.fields['배기량'].widget = forms.TextInput(attrs={'placeholder': 'ex) 346 cc를 제외하고 입력하여 주세요'})
@@ -178,7 +188,7 @@ class PostSearch(PostList):
     def get_queryset(self):
         q = self.kwargs['q']
         post_list = Post.objects.filter(
-            Q(차종__contains=q)  )
+            Q(세부차종__contains=q)  )
         return post_list
 
     def get_context_data(self, **kwargs):
@@ -191,6 +201,7 @@ class PostSearch(PostList):
 # Create your views here.
 def car_maker(request, pk):
     # 회사명으로 검색
+    print(pk)
     make = car_list.objects.filter(made=pk)
     name = make.values('company').distinct().order_by('company')
         
@@ -205,6 +216,7 @@ def car_maker(request, pk):
 
 def car_brand(request, car_name):
     # 차종으로 검색
+    print(car_name)
     make = car_list.objects.filter(company=car_name)
     name = make.values('name').distinct().order_by('name')
 
@@ -218,10 +230,9 @@ def car_brand(request, car_name):
 
 def car_detail(request, car_deta):
     # 차종으로 검색
-    
+    print(car_deta)
     make = car_list.objects.filter(name=car_deta)
     name = make.values('name_detail').distinct().order_by('name_detail')
-    print(name)
     # 딕셔너리에서 차종만 추출
     dict_u = {}
     for i,mm in enumerate(name):
@@ -230,15 +241,192 @@ def car_detail(request, car_deta):
     # json형식으로 전송
     return JsonResponse(dict_u)
 
-def car_detail_val(request,car_name, detail):
+
+def car_lee(request, lee):
     # 차종으로 검색
-    print("detail : ", detail)
-    make = car_list.objects.filter(name=car_name)
-    name = make.values('name_detail').distinct().order_by('name_detail')[detail]
-    print(name)
-    # 딕셔너리에서 차종만 추출
-    dict_u = {}
-    dict_u[0]=name['name_detail']
+    my_list = lee.split('_')
+    print(my_list)
+    df=pd.read_csv('blog/신차 가격표.csv')
+    df2=pd.read_csv('blog/sebu_model2.csv')
+    new_car_price=int(df[df['세부차종']==my_list[3]]['가격'])
+    car_kind=str(df[df['세부차종']==my_list[3]]['차종'])
+    
+    if my_list[0]=='국산차':
+        xgb_model=xgb.XGBRegressor()
+        xgb_model=pickle.load(open('blog/x_model.model','rb'))
+        xgb_korean_info=[0 for i in range(37)]
+        xgb_korean_info[0]=int(my_list[8])
+        xgb_korean_info[1]=int(my_list[4])
+        xgb_korean_info[2]=int(my_list[5])
+        if my_list[-3]=='있음':
+            xgb_korean_info[3]=1
+        if my_list[-2]=='있음':
+            xgb_korean_info[4]=1
+        if my_list[-1]=='있음':
+            xgb_korean_info[5]=1
+        
+        car_color=my_list[-4]
+        if car_color=='검정색':
+            xgb_korean_info[6]=1
+        elif car_color=='다크그레이색':
+            xgb_korean_info[7]=1
+        elif car_color=='은색':
+            xgb_korean_info[8]=1
+        elif car_color=='쥐색':
+            xgb_korean_info[9]=1
+        elif car_color=='진주색':
+            xgb_korean_info[10]=1
+        elif car_color=='청색':
+            xgb_korean_info[11]=1
+        elif car_color=='회색':
+            xgb_korean_info[12]=1
+        elif car_color=='흰색':
+            xgb_korean_info[13]=1
+            
+        fuel_type=my_list[6]
+        if fuel_type=='LPG':
+            xgb_korean_info[14]=1
+        elif fuel_type=='경유':
+            xgb_korean_info[15]=1
+        elif fuel_type=='경유+전기':
+            xgb_korean_info[16]=1
+        elif fuel_type=='수소전기':
+            xgb_korean_info[17]=1
+        elif fuel_type=='전기':
+            xgb_korean_info[18]=1
+        elif fuel_type=='하이브리드':
+            xgb_korean_info[19]=1
+        elif fuel_type=='휘발유':
+            xgb_korean_info[20]=1
+        elif fuel_type=='휘발유+LPG':
+            xgb_korean_info[21]=1
+        
+        xgb_korean_info[23]=1
+        wheel_type=my_list[-6]
+        if wheel_type=='4륜':
+            xgb_korean_info[24]=1
+        elif wheel_type=='전륜':
+            xgb_korean_info[25]=1
+        elif wheel_type=='후륜':
+            xgb_korean_info[26]=1
+        
+        if car_kind=='승용차':
+            xgb_korean_info[27]=1
+        elif car_kind=='승합차':
+            xgb_korean_info[28]=1
+        elif car_kind=='화물차':
+            xgb_korean_info[29]=1
+        
+        car_brand=my_list[1]
+        if car_brand=='기아':
+            xgb_korean_info[30]=1
+        elif car_brand=='대형트럭(2톤이상)':
+            xgb_korean_info[31]=1
+        elif car_brand=='르노삼성':
+            xgb_korean_info[32]=1
+        elif car_brand=='쉐보레':
+            xgb_korean_info[33]=1
+        elif car_brand=='쌍용':
+            xgb_korean_info[34]=1
+        elif car_brand=='제네시스':
+            xgb_korean_info[35]=1
+        elif car_brand=='현대':
+            xgb_korean_info[36]=1
+        
+        xgb_korean_info=np.array([xgb_korean_info])
+        res=xgb_model.predict(xgb_korean_info)
+        res=list(res)[0]*new_car_price
+        res=str(int(res))
+        print(res)
+    
+    elif my_list[0]=='외제차':
+        xgb_model=xgb.XGBRegressor()
+        xgb_model=pickle.load(open('blog/x_modelf.model','rb'))
+        xgb_korean_info=[0 for i in range(66)]
+        xgb_korean_info[0]=int(my_list[8])
+        xgb_korean_info[1]=int(my_list[4])
+        xgb_korean_info[2]=int(my_list[5])
+        if my_list[-3]=='있음':
+            xgb_korean_info[3]=1
+        if my_list[-2]=='있음':
+            xgb_korean_info[4]=1
+        if my_list[-1]=='있음':
+            xgb_korean_info[5]=1
+        
+        car_color=my_list[-4]
+        if car_color=='검정색':
+            xgb_korean_info[6]=1
+        elif car_color=='다크그레이색':
+            xgb_korean_info[7]=1
+        elif car_color=='은색':
+            xgb_korean_info[8]=1
+        elif car_color=='쥐색':
+            xgb_korean_info[9]=1
+        elif car_color=='진주색':
+            xgb_korean_info[10]=1
+        elif car_color=='청색':
+            xgb_korean_info[11]=1
+        elif car_color=='회색':
+            xgb_korean_info[12]=1
+        elif car_color=='흰색':
+            xgb_korean_info[13]=1
+            
+        fuel_type=my_list[6]
+        if fuel_type=='LPG':
+            xgb_korean_info[14]=1
+        elif fuel_type=='경유':
+            xgb_korean_info[15]=1
+        elif fuel_type=='경유+전기':
+            xgb_korean_info[16]=1
+        elif fuel_type=='수소전기':
+            xgb_korean_info[17]=1
+        elif fuel_type=='전기':
+            xgb_korean_info[18]=1
+        elif fuel_type=='하이브리드':
+            xgb_korean_info[19]=1
+        elif fuel_type=='휘발유':
+            xgb_korean_info[20]=1
+        elif fuel_type=='휘발유+LPG':
+            xgb_korean_info[21]=1
+        
+        xgb_korean_info[23]=1 # 수동, 자동
+        
+        wheel_type=my_list[-6]
+        if wheel_type=='4륜':
+            xgb_korean_info[24]=1
+        elif wheel_type=='전륜':
+            xgb_korean_info[25]=1
+        elif wheel_type=='후륜':
+            xgb_korean_info[26]=1
+        
+        if car_kind=='승용차':
+            xgb_korean_info[27]=1
+        elif car_kind=='승합차':
+            xgb_korean_info[28]=1
+        elif car_kind=='화물차':
+            xgb_korean_info[29]=1
+        
+        tmp_dic={'BMW':30,'닛산' : 31,'닷지':32,'대형버스(16인승)':33,'도요타':34,'람보르기니':35,'랜드로버':36,'렉서스':37,
+                 '롤스로이스':38,'링컨':39,'마세라티':40,'미니':41,'미쯔비시':42,'벤츠':43,'벤틀리':44,'볼보':45,'북기은상':46,'선롱':47,
+                 '스마트':48,'시트로엥':49,'아우디':50,'에스턴마틴':51,'인피니티':52,'재규어':53,'지프':54,'캐딜락':55,'크라이슬러':56,'테슬라':57,
+                 '토요타':58,'포드':59,'포르쉐':60,'폭스바겐':61,'푸조':62,'피아트':63,'험머':64,'혼다':65}
+        
+        car_brand=my_list[1]
+        xgb_korean_info[tmp_dic[car_brand]]=1
+        
+        
+        xgb_korean_info=np.array([xgb_korean_info])
+        res=xgb_model.predict(xgb_korean_info)
+        res=list(res)[0]*new_car_price
+        res=str(int(res))
+        print(res)
+                
+    dict_lee = {'health': res}
+  
+    
+    
 
     # json형식으로 전송
-    return JsonResponse(dict_u)
+    return JsonResponse({'차 가격': res})
+
+

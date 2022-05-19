@@ -11,7 +11,8 @@
     <form method="post" enctype="multipart/form-data">{% csrf_token %}
         {{ form | crispy }}
         <button type="submit" class="btn btn-primary float-right">든든!</button>
-        <button id="price" class="btn btn-primary float-right">가격 알아보기!</button>
+        <a id="ex_price"></a>
+        <a id="price" class="btn">가격 알아보기!</a>
     </form>
 
     <script>
@@ -90,33 +91,24 @@
                 });
             }); 
 
-            $(document).ready(function(){
-                $('#id_세부차종').on('change', function() {
-                    // 회사명 추출
-                    car_n = $("#id_차종").val()
-                    papa = $("#id_세부차종").val()
-                    
-                    $.ajax({
-                      type:'GET',
-                      url: "http://127.0.0.1:8000/blog/create_post/detail_val/"+car_n+"/"+papa,
-                      success: function(data)
-                      {           
-                        $("#id_세차").val(data[0])
-                      }
-                    })
-                  
-                });
-            }); 
     
             $("#price").click(function(){
                 //모든 항목 변수
-
+                leee= $("#id_생산지").val() + "_"+ $("#id_브랜드").val() + "_"+ $("#id_차종").val() + "_"+ $("#id_세부차종").val() + "_"+$("#id_연식").val() + "_"+$("#id_주행거리").val() + "_"+$("#id_연료").val() + "_"+$("#id_구동방식").val() + "_"+$("#id_배기량").val() + "_"+$("#id_색상").val() + "_"+$("#id_압류및저당").val() + "_"+$("#id_사고유무").val() + "_"+$("#id_전속이력").val()
                 // url에 변수값 실어서 전송
                 //success시 data => 예상가격
                 $.ajax({
                     type:'GET',
+                    url: "http://127.0.0.1:8000/blog/create_post/lee/"+leee,
+                    success : function(you){
+                    $("#price").text("적정가격:"+Object.values(you)+"만원")
+                },
+                error : function(XMLHttpRequest, textStatus, errorThrown){ // 비동기 통신이 실패할경우 error 콜백으로 들어옵니다.
+                    alert("빈칸을 다 입력해 주세요.")
+                }
+           
                 })
-            })
+            });
         </script>
     {{ form.media }}
 {% endblock %}
