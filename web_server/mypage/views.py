@@ -102,8 +102,7 @@ def user_img(request, pk):
             else:
                 Mypage.objects.create(author=user_id, profile_img=request.FILES['user_img'])
                 return mypage(request, pk)
-
-            
+         
 #차종
 def car_name(request, maker):
         # 차종으로 검색

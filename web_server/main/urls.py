@@ -5,6 +5,9 @@ urlpatterns = [
     #메인 화면
     path('', views.main, name="main"),
     
+    #로그인 했을경우 게시물 변경
+    path('user_id/<int:id>', views.login_main, name="login_name"),
+    
     # 구글 로그인
     path('accounts/', include('allauth.urls')),
     
