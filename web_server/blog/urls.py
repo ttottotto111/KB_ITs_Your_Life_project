@@ -30,8 +30,9 @@ urlpatterns = [
     path('create_post/made/<str:pk>', views.car_maker, name="car_maker"),
     path('create_post/brand/<str:car_name>', views.car_brand, name="car_brand"),
     path('create_post/detail/<str:car_deta>', views.car_detail, name="car_detail"),
-    path('create_post/detail_val/<str:car_name>/<int:detail>',views.car_detail_val, name="car_detail_val"),
+    path('create_post/lee/<str:lee>',views.car_lee, name="car_lee"),
     path('update_comment/<int:pk>/',views.CommentUpdate.as_view()),
+    path('<int:pk>/remove/',views.remove_post),
     #path('<int:pk>/',views.single_post_page),
     #path('',views.index),
 ]

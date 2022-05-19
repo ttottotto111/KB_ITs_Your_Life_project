@@ -16,7 +16,8 @@
                             {% endif %}
                                {{post.브랜드}}&nbsp{{post.세부차종}}
                             {% if user.is_authenticated and user == post.author %}
-                            <a class="btn btn-info btn-sm" style="float: right" href="/blog/update_post/{{ post.pk }}/" role="button"><i class="fas fa-pen"></i>  수정하기</a>
+                            <a href="/blog/{{post.pk}}/remove" class="btn btn-danger" style="float:right">삭제하기</a>
+                            <a class="btn btn-info" style="float: right" href="/blog/update_post/{{ post.pk }}/" role="button"><i class="fas fa-pen"></i>  수정하기</a>
                         {% endif %}
                         </h1>
                         
@@ -26,25 +27,51 @@
                         </h2>
             
                         
-                        <div class="card mb-3">
-                            <img style=" width: 965px; height: 500px;" class="card-img-top" src="{{ post.차사진.url }}" alt="{{ post.차종 }} 차사진">
-                            <div class="card-body">
-                              <h1 class="card-title">기본정보</h1>
-                              <a style="font-size:4.0em; float-right">연식:{{post.연식}}</ㅁ>
-                              <a style="font-size:4.0em; float-right">주행거리:{{post.주행거리}}</a>
-                                <br>
-                              <a style="font-size:4.0em; float-right">연료:{{post.연료}}</a>
-                              <a style="font-size:4.0em; float-right">구동방식:{{post.구동방식}}</a>
-                              <br>
-                              <a style="font-size:4.0em; float-right">배기량:{{post.배기량}}</a>
-                            
-                              <a style="font-size:4.0em; float-right">색상:{{post.색상}}</a>
-                                <br>
-                              <a style="font-size:4.0em; float-right">압류및저당:{{post.압류및저당}}</a>
-                              <a style="font-size:4.0em ;float-right">사고유무:{{post.사고유무}}</a>
-                              <a style="font-size:4.0em; float-right">전속이력:{{post.전속이력}}</a>
+                       
+                            {% if post.차사진 %}
+                                <img class="card-img-top" src="{{ post.차사진.url}}" alt="차사진">
+                            {% else %}
+                                <img class="card-img-top" src="https://image.yes24.com/momo/TopCate05/MidCate06/452138.jpg" alt="random_image">
+                            {% endif %}
+        
+                              <div class="container">
+                                <h2>기본정보</h2>
+                                <table class="table table-striped">
+                                  <thead>
+                         
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td>연식</td>
+                                      <td>{{post.연식}}년</td>
+                                      <td>주행거리</td>
+                                      <td>{{post.주행거리}}Km</td>
+                                    </tr>
+                                    <tr>
+                                      <td>연료</td>
+                                      <td>{{post.연료}}</td>
+                                      <td>배기량</td>
+                                      <td>{{post.배기량}}cc</td>
+                                    </tr>
+                                    <tr>
+                                      <td>색상</td>
+                                      <td>{{post.색상}}</td>
+                                      <td>압류및저당</td>
+                                      <td>{{post.압류및저당}}</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                        <td>사고유무</td>
+                                        <td>{{post.사고유무}}</td>
+                                        <td>전속이력</td>
+                                        <td>{{post.전속이력}}</td>
+                                      </tr>
+                                  </tbody>
+                                </table>
                             </div>
-                          </div>                
+                            
+                          
+                                
                         <!-- Preview image figure-->
                      
                    
@@ -56,14 +83,12 @@
                            
                  
                             <br>
-                            <br>
+                            
                             <h2>{{post.내용}}
-  
-                                
                             </h2>
                             
-                            <a href="#" style="float-right"> 판매자 {{post.author|upper}}</a> 
-                            <a style="float-right">{{post.created_at|date:'Y-m-d H:i'}}</a>    
+                            <a href="{{ post.get_user_url }}" style="float-right";> 판매자 {{post.author|upper}}</a> 
+                            <a style="float-right";>{{post.created_at|date:'Y-m-d H:i'}}</a>    
                             
             
                            
