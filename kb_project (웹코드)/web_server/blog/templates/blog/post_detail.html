@@ -1,0 +1,187 @@
+{% extends 'blog/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block main_area %}      
+             <div id="post-area">
+                            <!-- Post title-->
+                        <h1 class="mt-4">
+                            {% if post.category_id == 2 %}
+                                <span class="badge bg-danger float-left">{{post.category}}</span>
+                            {% elif post.category_id == 3 %}
+                                <span class="badge bg-primary float-left">{{post.category}}</span>
+                             {% elif post.category_id == 4 %}
+                                <span class="badge bg-warning float-left">{{post.category}}</span>
+                            {% else %}
+                               <span class="badge bg-light text-dark float-left">미분류</span>
+                            {% endif %}
+                            {% if post.category_id == 4 %}
+                                {{post.내용}}
+                            {% else %}
+                               {{post.브랜드}}&nbsp{{post.세부차종}}
+                            {% endif %}
+                            {% if user.is_authenticated and user == post.author %}
+                            <a href="/blog/{{post.pk}}/remove" class="btn btn-danger" style="float:right">삭제하기</a>
+                            <a class="btn btn-info" style="float: right" href="/blog/update_post/{{ post.pk }}/" role="button"><i class="fas fa-pen"></i>  수정하기</a>
+                        {% endif %}
+                        </h1>
+                        
+                        <br>
+                        <h2>
+                        {% if post.category_id == 4 %}
+                            <a style="float:left; color:blue;">{{post.가격 }}</a>
+                        {% else %}
+                          판매가격: <a style='color:blue;'>{{post.가격}}만원</a>
+                        {% endif %}
+                            
+                        </h2>
+            
+                        
+                       
+                            {% if post.차사진 %}
+                                <img class="card-img-top" src="{{ post.차사진.url}}" alt="차사진">
+                            {% else %}
+                                <img class="card-img-top" src="https://image.yes24.com/momo/TopCate05/MidCate06/452138.jpg" alt="random_image">
+                            {% endif %}
+        
+                              <div class="container">
+                                <h2>기본정보</h2>
+                                <table class="table table-striped">
+                                  <thead>
+                         
+                                  </thead>
+                                  <tbody>
+                                    <tr>
+                                      <td>연식</td>
+                                      <td>{{post.연식}}년</td>
+                                      <td>주행거리</td>
+                                      <td>{{post.주행거리}}Km</td>
+                                    </tr>
+                                    <tr>
+                                      <td>연료</td>
+                                      <td>{{post.연료}}</td>
+                                      <td>배기량</td>
+                                      <td>{{post.배기량}}cc</td>
+                                    </tr>
+                                    <tr>
+                                      <td>색상</td>
+                                      <td>{{post.색상}}</td>
+                                      <td>압류및저당</td>
+                                      <td>{{post.압류및저당}}</td>
+                                    
+                                    </tr>
+                                    <tr>
+                                        <td>사고유무</td>
+                                        <td>{{post.사고유무}}</td>
+                                        <td>전속이력</td>
+                                        <td>{{post.전속이력}}</td>
+                                      </tr>
+                                  </tbody>
+                                </table>
+                            </div>
+                            
+                          
+                                
+                        <!-- Preview image figure-->
+                     
+                   
+               
+             
+                        <!-- Post content-->
+                
+                    
+                           
+                 
+                            <br>
+                            
+                            <h2>{{post.내용|linebreaksbr}}
+                            </h2>
+                            
+                            <a href="{{ post.get_user_url }}" style="float-right";> 판매자 {{post.author|upper}}</a> 
+                            <a style="float-right";>{{post.created_at|date:'Y-m-d H:i'}}</a>    
+                            
+            
+                           
+                       
+                
+                <div id="comment-area" >
+                    <!-- Comments Form -->
+                    <div class="card my-6 " >
+                        <h5 class="card-header  bg-warning text-dark" >댓글:</h5>
+                     
+                            {% if user.is_authenticated %}
+                                <form id="comment-form" method="POST" action="{{ post.get_absolute_url }}new_comment/">
+                                    {% csrf_token %}
+                                    <div class="col-12" >
+                                        
+                                        {{ comment_form | crispy }}
+                                    </div>
+                                    <button type="submit" class="btn btn-dark" style="float:right">든든!</button>
+                                </form>
+                            {% else %}
+                              <a role="button" class="btn btn-outline-dark btn-block btn-sm" href="#" data-toggle="modal" data-target="#loginModal">댓글을 남기시려면 로그인 해주세요</a>
+                            {% endif %}
+                     
+                    </div>
+                
+            
+                    {% if post.comment_set.exists %}
+                        {% for comment in post.comment_set.iterator %}
+                            <!-- Single Comment -->
+                            <div class="media mb-4" id="comment-{{ comment.pk }}" >
+                                <img class="d-flex mr-3 rounded-circle" src="{{ comment.get_avatar_url }}" alt="{{ comment.author }}" width="40px">
+                                <div class="media-body">
+                                    {% if user.is_authenticated and comment.author == user %}  
+                                            <a role="button"
+                                            href="#"
+                                            id="comment-{{ comment.pk }}-delete-modal-btn"
+                                            class="btn btn-sm btn-danger"
+                                            data-bs-toggle="modal" data-bs-target="#deleteCommentModal-{{ comment.pk }}"
+                                            style="float:right">
+                                             삭제
+                                            </a>
+                                            <a role="button"
+                                               class="btn btn-sm btn-info"
+                                               id="comment-{{ comment.pk }}-update-btn"
+                                               href="/blog/update_comment/{{ comment.pk }}/"
+                                               style="float:right">
+                                                수정
+                                        </a>
+                                   
+                                 
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="deleteCommentModal-{{ comment.pk }}" tabindex="-1" role="dialog" aria-labelledby="deleteCommentModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="deleteModalLabel">삭제하시겠어요?</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <del>{{ comment | linebreaks }}</del>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                                                        <a role="button" class="btn btn-danger" href="/blog/delete_comment/{{ comment.pk }}/">삭제</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+
+                                    {% endif %}
+                                    <h5 class="mt-0">
+                                        {{ comment.author.username }}
+                                       
+                                    </h5>
+                                    <h4>{{ comment.content | linebreaks }}</h4>
+                                    {% if comment.created_at != comment.modified_at %}
+                                        <p class="text-muted float-right"><small> Updated: {{ comment.modified_at|date:'Y-m-d H:i' }}</small></p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+ {% endblock %}
