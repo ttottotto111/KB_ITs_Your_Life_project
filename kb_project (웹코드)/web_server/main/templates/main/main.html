@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>든든카</title>
+    <!-- j쿼리 -->
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <!-- 아이콘 사이트 -->
+    <script src="https://kit.fontawesome.com/0b5ddba842.js" crossorigin="anonymous"></script>
+    <!-- 부트스트랩 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <!-- 폰트 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&display=swap" rel="stylesheet">
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <!-- css -->
+    <!-- 배경 -->
+    <style>
+      body {
+        background: url('https://cdn.pixabay.com/photo/2016/09/29/18/48/mustang-1703538_960_720.jpg') no-repeat
+        center center fixed;
+        
+        -moz-background-size: cover;
+        background-size: cover;
+        -o-background-size: cover;
+
+        font-family: 'Do Hyeon', sans-serif;
+      }
+    
+      section {
+        margin-bottom: 150px;
+      }
+
+      .card {
+        background-color: rgba(0,0,0,0.5)
+      }
+
+      .fixed-bottom {
+        background-color: white;
+      }
+
+    </style>
+  </head>
+<body>
+    <!-- 로그인 확인 -->
+    {% load socialaccount %}
+
+    <!-- 네이게이션 바-->
+    {% include 'main/navbar.html' %}
+
+
+      <!-- 페이지 소개 -->
+      <div class="container">
+        <div class="row justify-content-between">
+
+          <div class="col-lg-6 text-dark">
+            <h1 class="mt-5"><img src="https://postfiles.pstatic.net/MjAyMjA1MThfMjYg/MDAxNjUyODYxMTEyMjUy.MLCoeJgu6X33GskXvOI3bchDH_7DkwU3w822yVL_S5wg.72NPddf8CA3kuPFlQwYKFiC9spAs_Nb6zmmgRJlYRiAg.PNG.ksw4997/logo.png?type=w966" width="80px" height="80px">당신의 든든한 중고차구매 파트너</h1>
+            <div id="high_sell" style="width:600px; height:300px;"></div>
+            <div class="mt-3" id="pop_sell" style="width:600px; height:300px;"></div>
+          </div>
+
+          <!-- 블로그 카드 -->
+          <div class="col-lg-5 mt-5">
+            <h2 class="text-light"><a href="http://127.0.0.1:8000/blog/" class="text-decoration-none text-light">거래 게시판</a></h2>
+
+            {% if user.is_authenticated %}
+            <div id="blog_c"></div>
+            <script>
+              function user_id()
+              {
+                userid = {{ user.id }}
+                $.ajax({
+                  type: 'GET',
+                  url: "http://127.0.0.1:8000/user_id/"+userid,
+                  success: function(data){
+                    for(var i=0; i<Object.keys(data).length; i++){
+                    $("#blog_c").append("<div class=" + "\"" + "card mt-1" + "\"" + ">"+
+                      "<div class=" + "\"" + "card-body" + "\"" + ">"+
+                      "<h5><a href=" + "\""  + data[i][3] + "\"" + "class=" + "\""+"text-decoration-none text-light"+"\""+">" + data[i][0] + "</a></h5>"+
+                      "<span class=" + "\"" + "badge rounded-pill bg-dark float-right text-light" + "\"" + ">"+
+                        "<a href="+"\""+ data[i][4] +"\""+ "class=" +"\"" + "text-decoration-none text-light" +"\""+">"+ data[i][1] +"</a>"+
+                        "&nbsp;"+
+                        "&nbsp;"+
+                        data[i][2]+
+                        "</span>"+
+                        "</div>"+
+                        "</div>")
+                    }
+                  }
+                })
+              } 
+
+              $(function(){
+                user_id()
+              })
+            </script>
+
+            {% else %}
+            {% for p in posts %}
+            <div class="card mt-1">
+              <div class="card-body">
+                <h5><a href="{{ p.get_absolute_url }}" class="text-decoration-none text-light">{{p.브랜드}} {{p.세부차종}}</a></h5>
+                  <span class="badge rounded-pill bg-dark float-right text-light">
+                    <a class="text-decoration-none text-light" href="{{ p.get_user_url }}">{{p.author.username}}</a>
+                    &nbsp;
+                    &nbsp;
+                    {{p.created_at}}
+                  </span>
+              </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+          </div>
+
+        </div>
+      </div>  
+      
+    </div>
+    <!-- 사이트 밑 바 -->
+    <div class="fixed-bottom">
+
+    <!-- 차량 선택 -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">       
+
+          <!-- 회사명 선택 -->
+          <select id="maker" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+            <option selected>회사명</option>
+            {% for m in maker %}
+            <option value={{ m.company }}>{{m.company}}</option>
+            {% endfor %}
+          </select>
+
+          <!-- 차종 선택 -->
+          <select id="car_list" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">         
+          </select>
+
+          <!-- 세부 차종 선택 -->
+          <select id="car_list_detail" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+          </select>
+
+          <div class="collapse navbar-collapse" id="navbarNavDropdown"></div>
+        </div>
+        <a id="car_btn" type="button" class="navbar-brand btn btn-outline-dark">차량 검색</a>
+        <a id="cancel_btn" type="button" class="navbar-brand btn btn-outline-dark">취소</a>
+      </nav>
+
+      <div id="all_chart">
+        <h3 id="car"></h3>
+        <h4 id="down_rate"></h4>
+      <div id="car_chart"></div>
+      </div>
+    </section>
+    
+    </div>
+    
+
+      <!-- 함수 -->
+    <script>
+      // 차종 비활성화
+      function car_list_disabled(){
+          // 차종선택 비활성화
+        $("#car_list").empty()
+        $("#car_list").append("<option selected>회사명을 선택하세요</option>")
+        $("#car_list").prop('disabled', true)
+      }
+
+      // 세부차종 비활성화
+      function car_list_detail_disabled(){
+        $("#car_list_detail").empty()
+        $("#car_list_detail").append("<option selected>차종을 선택하세요</option>")
+        $("#car_list_detail").prop('disabled', true)
+      }
+
+      // 차종 선택
+      $(document).ready(function(){
+          $('#maker').on('change', function() {
+            if(this.value== "회사명")
+            {       
+              car_list_disabled()
+              car_list_detail_disabled()
+            }
+            else
+            {
+              $("#car_list").prop('disabled', false)
+
+              // 회사명 추출
+              maker = this.value
+              
+              $.ajax({
+                type:'GET',
+                url: "http://127.0.0.1:8000/"+maker,
+                success: function(data)
+                {
+                  // 차종항목 초기화
+                  $("#car_list").empty()            
+                  $("#car_list").append("<option selected>차종을 선택하세요</option>")
+
+                  // 딕셔너리 형태의 차종을 모두 차종 항목에 삽입
+                  for(var i=0; i<Object.keys(data).length; i++)
+                  {
+                    $("#car_list").append("<option value=" + data[i] +">"+data[i]+"</option>")
+                    
+                  }
+                }
+              })
+            }
+          });
+      });  
+
+       // 세부차종 선택
+       $(document).ready(function(){
+        $('#car_list').on('change', function() {
+          if(this.value== "차종을 선택하세요")
+          {       
+            car_list_detail_disabled()
+          }
+          else
+          {
+            $("#car_list_detail").prop('disabled', false)
+
+            // 회사명 추출
+            car_name = this.value
+            
+            $.ajax({
+              type:'GET',
+              url: "http://127.0.0.1:8000/car_detail/"+car_name,
+              success: function(data)
+              {
+                // 차종항목 초기화
+                $("#car_list_detail").empty()            
+                $("#car_list_detail").append("<option selected>세부차종을 선택하세요</option>")
+
+                // 딕셔너리 형태의 차종을 모두 차종 항목에 삽입
+                for(var i=0; i<Object.keys(data).length; i++)
+                {
+                  $("#car_list_detail").append("<option value=" + i +">"+data[i]+"</option>")
+                }
+              }
+            })
+          }
+        });
+    });
+
+      
+      // 차량 검색 버튼
+      $("#car_btn").click(function(){
+        if($("#car_list_detail").val()=="차종을 선택하세요")
+        {
+          car_name = $("#car_list_detail").val()
+          alert(car_name)
+        }
+        else
+        {
+          $("#car_chart").append()
+
+          car_name = $("#car_list").val()
+          detail_no = $("#car_list_detail").val()
+          $.ajax({
+            type: "GET",
+            url: "http://127.0.0.1:8000/car_chart/"+car_name +"/"+detail_no,
+            success: function(data)
+            {
+              $("#car").empty()
+              $("#down_rate").empty()
+              $("#car").append(data['name'])
+              $("#down_rate").append("예상 감가율: "+data['down_rate']+"%")
+
+              var chartOptions = {
+                chart: {
+                  renderTo: 'car_chart',
+                  type: 'line'
+                },
+                title: {
+                  text: data['name']
+                },
+                xAxis: {
+                  categories: ['현재','1년 후','2년 후','3년 후','4년 후','5년 후']
+                },
+                yAxis: {
+                  title: '예상 감가'
+                },
+
+                series: [
+                {
+                  name: "감가 적용 시세",
+                  data: [data['price'][0],data['price'][1],data['price'][2],data['price'][3],data['price'][4], data['price'][5]]
+                },
+                {
+                  name: "잔존가치",
+                  data: [data['value'][0],data['value'][1],data['value'][2],data['value'][3],data['value'][4], data['value'][5]]
+                },
+                {
+                  name: "판매이득가치",
+                  data: [data['sub'][0],data['sub'][1],data['sub'][2],data['sub'][3],data['sub'][4], data['sub'][5]]
+                }]
+              };
+          
+              var chart = new Highcharts.Chart(chartOptions);
+              //$("#car_chart").append(chart.render())
+            }
+          })
+        }
+      });
+
+      // 전년도 팔린 개수 상위
+      function high_sell(){
+        var chartOptions = {
+          chart: {
+            renderTo: 'high_sell',
+            type: 'bar'
+          },
+          title: {
+            text: "전년도 판매량 Top5"
+          },
+          xAxis: {
+            categories: ["포터","그랜저","모닝","소나타","카니발"]
+          },
+          yAxis: {
+            title: '판매량'
+          },
+          series: [{
+            name:["판매량"],
+            data: [3956, 3854,3014,2999,2851]
+          }]
+        };
+    
+        var chart = new Highcharts.Chart(chartOptions);
+      }
+
+      // 인기매물
+      function pop(){
+        var chartOptions = {
+          chart: {
+            renderTo: 'pop_sell',
+            type: 'bar',
+          },
+          title: {
+            text: "예상 판매 기간 Top5"
+          },
+          xAxis: {
+            categories: ["티볼리","포터","봉고", "레이", "모닝"]
+          },
+          yAxis: {
+            title: '팔린 기간'
+          },
+          series: [{
+            name:["팔린 기간"],
+            data: [118,129,142,151,164]
+          }]
+        };
+    
+        var chart = new Highcharts.Chart(chartOptions);
+      };
+
+      $("#cancel_btn").click(function(){
+        $("#car").empty()
+        $("#down_rate").empty()
+        $("#car_chart").empty()
+      })
+
+      // 차량리스트, 세부차량 비활성화
+      $(function(){
+        car_list_disabled()
+        car_list_detail_disabled()
+        high_sell()
+        pop()
+      })
+      </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  </body>
+</html>
